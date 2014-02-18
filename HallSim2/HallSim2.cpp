@@ -79,9 +79,9 @@ enum Direction {
 void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
 	stringstream fileName;
 	if (time == -1)
-		fileName << "..\\Output\\Feb_18_2014_5\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
+		fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
 	else
-		fileName << "..\\Output\\Feb_18_2014_5\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
+		fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
 	string fn = fileName.str();
 	stringstream istream;
 
@@ -369,10 +369,10 @@ void RunSimulation(Combo c, int it){
 		}
 	}
 
-	//Write out information now that we are done
-	std::list<Cell *>::const_iterator iterator = allCells->begin();
-	std::list<Cell *>::const_iterator iterator2 = allCells->end();
-	WriteToFile(iterator, -1, iterator2, c.code, it);
+	////Write out information now that we are done
+	//std::list<Cell *>::const_iterator iterator = allCells->begin();
+	//std::list<Cell *>::const_iterator iterator2 = allCells->end();
+	//WriteToFile(iterator, -1, iterator2, c.code, it);
 
 	for (std::list<Cell *>::const_iterator iterator = allCells->begin(), end = allCells->end(); iterator != end; ++iterator) {
 		//(*iterator)->print();
@@ -424,8 +424,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		RunSimulation(c, 0);
 		allCombos->pop_front();
 	}
-	//}
-
+	
+	//Now generate the pictures and such
+	std::string test = "python analyzeData.py";
+	system(test.c_str());
 }
 
 
