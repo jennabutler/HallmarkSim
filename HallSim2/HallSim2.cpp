@@ -79,13 +79,12 @@ enum Direction {
 void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
 	stringstream fileName;
 	if (time == -1)
-		fileName << "..\\Output\\Feb_11_2014_2\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
+		fileName << "..\\Output\\Feb_18_2014_5\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
 	else
-		fileName << "..\\Output\\Feb_11_2014_2\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
+		fileName << "..\\Output\\Feb_18_2014_5\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
 	string fn = fileName.str();
 	stringstream istream;
 
-	int cellTotal = 0;
 	//istream << "i, j, state, mut, sg, igi, aa, it, gu \n";
 	//Iterate over the cells and get list to draw
 	for (; iterator != iteratorEnd; ++iterator) {
@@ -150,7 +149,9 @@ void RunSimulation(Combo c, int it){
 
 	//Santos uses an event queue
 	int time = 0;
-	int oldTime = 0;
+	//Attempting to check if time has changed and only then update... TO-DO
+	bool timeChanged = false;
+
 	//Priority queue 
 	priority_queue<Event, vector<Event>, CompareEvent> events;
 	//Create initial cell and add pointer to grid
@@ -178,7 +179,8 @@ void RunSimulation(Combo c, int it){
 	//the state variable in all cells.. even for the same i and j position... state isn't getting changed right
 	//Is what is on all cells not a proper pointer? Why isn't it being updated?
 
-	while (events.size() > 0 && counter<15000){
+	while ((!(events.empty())) && counter<30000){
+
 		//Get next event
 		currentEvent = events.top();
 		//Do the simulation steps...
@@ -187,9 +189,11 @@ void RunSimulation(Combo c, int it){
 		if (currentCell->getState() == ALIVE){
 
 			//Get the time of this operation from the queue
+			timeChanged = false;
 			currentTime = currentEvent.getTime();
 			if (currentTime > time){
 				time = currentTime;
+				timeChanged = true;
 			}
 
 
@@ -313,9 +317,9 @@ void RunSimulation(Combo c, int it){
 
 		//Every 100 time steps update other oxygen?
 		//Check with Mark
-		int timeUpdate = 0;
-		if (time % 25 == 0){
-			timeUpdate++;
+
+		if ((timeChanged == true) && (time % 25 == 0)){
+			
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
 			double oxygenAmount;
@@ -338,6 +342,8 @@ void RunSimulation(Combo c, int it){
 						(*iterator)->setToDead();
 					}
 				} //set to false hre so we don't have to go through again //check it with mark
+				//Reset it for next round
+				(*iterator)->markConsumedOxy(false);
 
 			}
 
@@ -345,19 +351,18 @@ void RunSimulation(Combo c, int it){
 			//2/10
 
 			binaryGrid.updateBinaryFluidSmall();
-			cout << "oxygen in middle is: " << binaryGrid.getOxygenValue(150, 150);
 
 			//All cells have been updated for oxygen
-			//Reset the oxygen consumming flags to false for the next round
-			iterator = allCells->begin();
-			iterator2 = allCells->end();
-			for (; iterator != iterator2; ++iterator) {
-				(*iterator)->markConsumedOxy(false);
-			}
+			//Reset the oxygen consumming flags to false for the next round.. did it up above
+			//iterator = allCells->begin();
+			//iterator2 = allCells->end();
+			//for (; iterator != iterator2; ++iterator) {
+			//	(*iterator)->markConsumedOxy(false);
+			//}
 		}
 
 	//	Write out every x timesteps
-		if (counter % 200 == 0){
+		if (counter % 400 == 0){
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
 			WriteToFile(iterator, counter, iterator2, c.code, it);
