@@ -3,7 +3,6 @@
 //Testing commits
 #include "stdafx.h"
 #include "Cell.h"
-
 #include "Event.h"
 #include "Constants.h"
 #include "Global.h"
@@ -14,6 +13,10 @@
 #include <queue>
 #include <list>
 #include <sstream>
+#include <sys/types.h>
+#include <sys/timeb.h>
+#include <ctime>
+#include <direct.h>
 
 using namespace std;
 
@@ -78,10 +81,10 @@ enum Direction {
 */
 void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
 	stringstream fileName;
-	if (time == -1)
-		fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
-	else
-		fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
+	//if (time == -1)
+		//fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
+	//else
+	fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
 	string fn = fileName.str();
 	stringstream istream;
 
@@ -179,7 +182,7 @@ void RunSimulation(Combo c, int it){
 	//the state variable in all cells.. even for the same i and j position... state isn't getting changed right
 	//Is what is on all cells not a proper pointer? Why isn't it being updated?
 
-	while ((!(events.empty())) && counter<30000){
+	while ((!(events.empty())) && counter<35000){
 
 		//Get next event
 		currentEvent = events.top();
@@ -362,7 +365,7 @@ void RunSimulation(Combo c, int it){
 		}
 
 	//	Write out every x timesteps
-		if (counter % 400 == 0){
+		if (counter % 500 == 0){
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
 			WriteToFile(iterator, counter, iterator2, c.code, it);
@@ -405,6 +408,8 @@ void generateGroups() {
 	//Combo c11 = {"k", 1, 1, 1, 0, 0};	allCombos->push_back(c11);
 
 }
+
+
 
 /** 
 * Main
