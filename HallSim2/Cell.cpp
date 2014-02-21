@@ -34,7 +34,7 @@ namespace std {
 		//Telomere, mutation and death rates from Santos 2012
 		telomere = 100;
 		evadeApoptosis = 10;
-		mutationRate = 1000;
+		mutationRate = 500;
 		geneticInstabilityFactor = 5;
 		randomDeathRate = 10000;
 		competition = 10; 
@@ -586,7 +586,8 @@ namespace std {
 	* TO-DO: Discuss with Mark if this makes sense
 	*/
 	void Cell::checkTrapped(){
-		if (!(mutated) && !(withinBloodRange()) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
+		//if (!(mutated) && !(withinBloodRange()) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
+		if ((!(mutated)) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 			setToDead();
 		}
 	}

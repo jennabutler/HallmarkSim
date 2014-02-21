@@ -81,9 +81,7 @@ enum Direction {
 */
 void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
 	stringstream fileName;
-	//if (time == -1)
-		//fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_it_" << it << "_end.txt";
-	//else
+
 	fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
 	string fn = fileName.str();
 	stringstream istream;

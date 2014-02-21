@@ -22,16 +22,16 @@ const int RIGHT_BLOOD_3 = 250;
 const int TOP_BLOOD_3 = 0;
 const int BOTTOM_BLOOD_3 = 250;
 
-const int BLOOD_RADIUS = 35; //300
-const int BLOOD_RADIUS_2 = 40;
-const int BLOOD_RADIUS_3 = 45;
-const int BLOOD_RADIUS_4 = 50;
+const int BLOOD_RADIUS = 40; //300
+const int BLOOD_RADIUS_2 = 45;
+const int BLOOD_RADIUS_3 = 50;
+const int BLOOD_RADIUS_4 = 55;
 const int BLOOD_H = 130; //2480
 const int BLOOD_K = 130; //2480
 
 const int GROWTH_RADIUS = 75; //200
-const int GROWTH_H = 160; //2525 
-const int GROWTH_K = 160; //2525
+const int GROWTH_H = 130; //2525 
+const int GROWTH_K = 130; //2525
  
 const int LEFT_GROWTH = 125; //2425
 const int RIGHT_GROWTH = 200; //2600
