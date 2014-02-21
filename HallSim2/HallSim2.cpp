@@ -182,7 +182,7 @@ void RunSimulation(Combo c, int it){
 	//the state variable in all cells.. even for the same i and j position... state isn't getting changed right
 	//Is what is on all cells not a proper pointer? Why isn't it being updated?
 
-	while ((!(events.empty())) && counter<35000){
+	while ((!(events.empty())) && counter<40000){
 
 		//Get next event
 		currentEvent = events.top();
@@ -236,6 +236,7 @@ void RunSimulation(Combo c, int it){
 			}
 			//Check Hallmark 5 .. within blood range or has angiogenesis turned on
 			bool blood = false;
+			
 			if (currentCell->withinBloodRange() == true){
 				blood = true;
 			}
@@ -431,7 +432,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	
 	//Now generate the pictures and such
-	std::string test = "python analyzeData.py";
+	std::string test = "python analyzeData2.py";
 	system(test.c_str());
 }
 
