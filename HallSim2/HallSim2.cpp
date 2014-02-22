@@ -76,6 +76,34 @@ enum Direction {
 	N, S, E, W, NE, SE, SW, NW
 };
 
+void WriteParams(int howEnd){
+	stringstream fileName;
+	fileName << "..\\Output\\Working\\Parameters.txt";
+	string fn = fileName.str();
+	stringstream istream;
+
+	istream << "Ended because: " << howEnd << " (0 is time ran out, 1 is 95% cancer) \n";
+	istream << "Seed: " << RAND_SEED << "\n";
+	istream << "GRID_SIDE: " << GRID_SIDE << "\n";
+	istream << "Blood radius: " << BLOOD_RADIUS << "\n";
+	istream << "Blood radius 2: " << BLOOD_RADIUS_2 << "\n";
+	istream << "Blood radius 3: " << BLOOD_RADIUS_3 << "\n";
+	istream << "Blood radius 4: " << BLOOD_RADIUS_4 << "\n";
+	istream << "Blood H: " << BLOOD_H << "\n";
+	istream << "Blood K: " << BLOOD_K << "\n";
+	istream << "Growth radius: " << GROWTH_RADIUS << "\n";
+	istream << "Growth H: " << GROWTH_H << "\n";
+	istream << "Growth K: " << GROWTH_K << "\n";
+	istream << "Initial mutation rate: " << MUTATION_RATE << "\n";
+
+	//Write the cells to a file
+	istream << "\n";
+	ofstream myfile;
+	myfile.open(fn);
+	myfile << istream.str();
+	myfile.close();
+}
+
 /**
 * Code to write the current state out to a file
 */
@@ -107,7 +135,7 @@ void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list
 /** 
 * Run a simulation based on set of boolean parameters
 */
-void RunSimulation(Combo c, int it){
+int RunSimulation(Combo c, int it){
 	//srand(1234); in main
 
 	//Set up hallmarks for analysis
@@ -145,8 +173,12 @@ void RunSimulation(Combo c, int it){
 	//Use a vector to keep track of all of the cells.. just add them onto/into the vector when created
 	list<Cell*> * allCells = new list<Cell*>();
 
-	//Need a grid
+	//Keep track of total number of cells and cancer cell
+	//End simulation if END_PERCENT of cells are cancerous
 	int cellCount = 0;
+	int cancerCount = 0;
+	int aliveNormal = 1;
+	double cancerPercent = 0;
 
 	//Santos uses an event queue
 	int time = 0;
@@ -180,7 +212,7 @@ void RunSimulation(Combo c, int it){
 	//the state variable in all cells.. even for the same i and j position... state isn't getting changed right
 	//Is what is on all cells not a proper pointer? Why isn't it being updated?
 
-	while ((!(events.empty())) && counter<40000){
+	while ((!(events.empty())) && (counter<35000) && (cancerPercent < END_PERCENT)){
 
 		//Get next event
 		currentEvent = events.top();
@@ -319,6 +351,7 @@ void RunSimulation(Combo c, int it){
 
 		//Every 100 time steps update other oxygen?
 		//Check with Mark
+		//Also counts how many cancer cells there are
 
 		if ((timeChanged == true) && (time % 25 == 0)){
 			
@@ -346,8 +379,21 @@ void RunSimulation(Combo c, int it){
 				} //set to false hre so we don't have to go through again //check it with mark
 				//Reset it for next round
 				(*iterator)->markConsumedOxy(false);
-
+				//Count number of alive normal cells, and alive cancer cells
+				//Alive is 0
+				if ((*iterator)->isMutated() && ((*iterator)->getState() == 0)){
+					cancerCount++;
+				}
+				if (((*iterator)->isMutated() == false) && ((*iterator)->getState() == 0)){
+					aliveNormal++;
+				}
 			}
+			cancerPercent = cancerCount/aliveNormal; //TO-DO change this to be ALIVE cancer and ALIVE regular... hm...
+			if (cancerPercent > END_PERCENT){
+				return 1;
+			}
+			cancerCount = 0; //Reset it because we don't want to be adding to it
+			aliveNormal = 1;
 
 			//Update binary fluid
 			//2/10
@@ -384,6 +430,7 @@ void RunSimulation(Combo c, int it){
 	delete allCells;
 	//delete start;
 	//delete firstEvent;
+	return 0;
 }
 
 list<Combo> * allCombos = new list<Combo>();
@@ -417,21 +464,25 @@ void generateGroups() {
 */
 int _tmain(int argc, _TCHAR* argv[])
 {
-	srand(5678);
+
+	srand(RAND_SEED);
 
 
 	//Turn on loop for multiple comparissions 
 	//for (int i=0; i<10; i++){
 	generateGroups();
+	int howEnd = 0;
 	while (allCombos->empty() != true){
 		Combo c = allCombos->front();
-		RunSimulation(c, 0);
+		howEnd = RunSimulation(c, 0);
 		allCombos->pop_front();
 	}
 	
 	//Now generate the pictures and such
 	std::string test = "python analyzeData2.py";
 	system(test.c_str());
+
+	WriteParams(howEnd);
 }
 
 

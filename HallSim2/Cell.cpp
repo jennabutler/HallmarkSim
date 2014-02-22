@@ -34,7 +34,7 @@ namespace std {
 		//Telomere, mutation and death rates from Santos 2012
 		telomere = 100;
 		evadeApoptosis = 10;
-		mutationRate = 500;
+		mutationRate = MUTATION_RATE;
 		geneticInstabilityFactor = 5;
 		randomDeathRate = 10000;
 		competition = 10; 
@@ -259,11 +259,28 @@ namespace std {
 		//Equation of a circle is (x-h)^2 + (y-k)^2 = r2
 		//for a circle centered at h,k with radius r
 		//This makes a circle of growth factor
-		if ((((i-GROWTH_H)^2) + ((j-GROWTH_K)^2)) <= (GROWTH_RADIUS)^2){
+		int within = rand() % 10 + 1; //drop off the chances of it surviving
+		if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RADIUS,2))){
 			return true;
 		}
-		else
+		else if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RAIDUS_2,2))) {
+			if (within < 6)
+				return true;
 			return false;
+		}
+		else if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RADIUS_3,2))) {
+			if (within < 4)
+				return true;
+			return false;
+		}
+		else if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RADIUS_4,2))) {
+			if (within < 2)
+				return true;
+			return false;
+		}
+		else {
+			return false;
+		}
 		//Will need to calculate some growth factor range
 	}
 
