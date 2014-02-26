@@ -13,6 +13,7 @@ Event::Event()
 	timePoint = rand() % 6 + 5;
 }
 
+
 //Event::Event(Cell * x, int t){
 //	currentCell = *x;
 //	timePoint = t;
@@ -37,6 +38,25 @@ Event::Event()
 Event::Event(Cell & x, int t){
 	currentCell = &x;
 	timePoint = t + rand() % 6 + 5;
+}
+
+/**
+Create the new event with the cell passed it
+Schedule it's mitosis for some point in time
+The time point is a bit longer if it is on the diagonal
+*/
+Event::Event(Cell & x, int t, int dir){
+	if (dir == 4 || dir == 5 || dir==6 || dir==7){
+		timePoint = t + rand() % 7 + 7;
+		//Range from 7 to 14 time steps in future
+		//(sqrt(2)) of 5 to 11 time steps to account for 
+		//diagonal taking more time
+	}
+	else {
+		timePoint = t + rand() % 6 + 5;
+		//Range from 5 to 11 time steps in future
+	}
+	currentCell = &x;
 }
 
 //Event::Event(CancerCell & x, int t){

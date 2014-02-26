@@ -97,7 +97,8 @@ namespace std {
 	bool Cell::died() {
 		int x = rand() % randomDeathRate + 1;
 		if (x == randomDeathRate) {
-			state = DEAD;
+			//state = DEAD;
+			setToDead();
 			return true;
 		}
 		return false;
@@ -136,7 +137,8 @@ namespace std {
 		double apopChance = ((float)(mutCount)/evadeApoptosis)*evadeApoptosis;
 		int x = rand() % evadeApoptosis + 1;
 		if (x <= apopChance){ //Cell dies via apoptosis
-			state = DEAD;
+			//state = DEAD;
+			setToDead();
 			return true;
 		}
 		return false;
@@ -250,12 +252,6 @@ namespace std {
 		//Hallmark 1 preference
 		if (selfGrowth == true)
 			return true;
-		//if ((i >= LEFT_GROWTH) && (i <= RIGHT_GROWTH)){
-		//	if ((j >= TOP_GROWTH) && (j <= BOTTOM_GROWTH)){
-		//		return true;
-		//	}
-		//	return false;
-		//}
 		//Equation of a circle is (x-h)^2 + (y-k)^2 = r2
 		//for a circle centered at h,k with radius r
 		//This makes a circle of growth factor
@@ -281,15 +277,16 @@ namespace std {
 		else {
 			return false;
 		}
-		//Will need to calculate some growth factor range
+		//Make parabolic?
 	}
 
-		/**
+	/**
 	* Method to calculate if the cell is within the range of the
 	* blood vessels for oxygen
 	* @return bool true if within range, false otherwise
-	* TO-DO: If not within blood range, should it die? 
+	* TO-DO: If not within blood range, should it die?  handled in sim
 	*/ 
+	//Should be a parabola?
 	bool Cell::withinBloodRange(){
 		//Hallmark 5 check
 		//If the cell has sustained angiogenesis on, it doesn't matter if it is within the range of blood
@@ -322,41 +319,6 @@ namespace std {
 		else {
 			return false;
 		}
-		//it would be nice if blood could be a parabola or something instead...
-		//if the cell is within the main blood bounds, it has blood
-		//if ((i >= LEFT_BLOOD) && (i <= RIGHT_BLOOD)){
-		//	if ((j >= TOP_BLOOD) && (j <= BOTTOM_BLOOD)){
-		//		return true;
-		//	}
-		//	return false;
-		//}
-		////If the cell is outside of main blood area, there is a 50% chance it gets blood (mimcing a slow drop off.. should really be like a heat equation)
-		//else {
-		//	int within = rand() % 10 + 1; //drop off the chances of it surviving
-		//	if ((i >= LEFT_BLOOD_2) && (i <= RIGHT_BLOOD_2)){
-		//		if ((j >= TOP_BLOOD_2) && (j <= BOTTOM_BLOOD_2)){
-		//			if (within < 6) {
-		//				return true;
-		//			}
-		//			return false;
-		//		}
-		//		return false;
-		//	}
-		//	else {
-		//		if ((i >= LEFT_BLOOD_3) && (i <= RIGHT_BLOOD_3)){
-		//			if ((j >= TOP_BLOOD_3) && (j <= BOTTOM_BLOOD_3)){
-		//				if (within < 3) {
-		//					return true;
-		//				}
-		//				return false;
-		//			}
-		//			return false;
-		//		}
-		//		return false;
-		//	}
-		//	return false;	
-		//}
-		//return false;
 	}
 
 
@@ -603,6 +565,7 @@ namespace std {
 	* TO-DO: Discuss with Mark if this makes sense
 	*/
 	void Cell::checkTrapped(){
+		//Should we do the blood one? Mark
 		//if (!(mutated) && !(withinBloodRange()) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 		if ((!(mutated)) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 			setToDead();
@@ -614,6 +577,16 @@ namespace std {
 	*/
 	bool Cell::checkOxygen(double oxygenAmount){
 		if (oxygenAmount >= OXYGEN_CONSUMPTION){
+			return true;
+		}
+		//Mark: I'm not sure about this
+		//I only want to consume oxygen if there is enough there to remove 
+		//from the lbm system
+		//If the cell is angiogenic, should it really be removing oxygen 
+		//from the system? It should in reality, but our system 
+		//doesn't infuse oxygen into the system, so I feel like the 
+		//angiogenic ones shouldn't remove it perhaps?
+		else if (angiogenesis() == true){
 			return true;
 		}
 		else if (neighbourSusAngio() == true){

@@ -31,6 +31,7 @@ class Event {
 public:
 	Event();
 	Event(Cell & x, int t); //pass by reference
+	Event(Cell & x, int t, int dir);
 	//Event(CancerCell & x, int t); //pass by reference, pg 38
 	int getTime() { return timePoint; }
 	void setTime(int newTime); //look up what an ampersand means in a function prototype

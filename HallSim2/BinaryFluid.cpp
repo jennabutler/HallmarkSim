@@ -494,9 +494,6 @@ double BinaryFluid::getOxygenValue(int i, int j){
 	int boundaryJ = oxyJ + scaleFactor;
 	for (oxyI=i*scaleFactor; oxyI < boundaryI; oxyI++){
 		for (oxyJ=j*scaleFactor; oxyJ<boundaryJ; oxyJ++){
-			//printf("%i, %i", oxyI, oxyJ);
-			//cout << "i, j: " << oxyI << ", " << oxyJ << "\n";
-			//cout << oxyJ;
 			oxygenValue = oxygenValue + 0.5*(density[oxyI][oxyJ] - phi[oxyI][oxyJ]); //updated Sept 26 2012
 		}
 	}
@@ -597,6 +594,8 @@ void BinaryFluid::consumeOxygen(int i, int j, double amount){
 			}
 		}
 	}
+	//MARK not doing the weird tiny oxygen consumption thing for now
+
 	//cout << Ff[i][j][2];
 	// oxygenTest1 =  0.5*(density[oxyI][oxyJ] - phi[oxyI][oxyJ]);
 	//// If there is not enough oxygen at each site, take away as much as possible

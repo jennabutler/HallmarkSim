@@ -82,7 +82,7 @@ void WriteParams(int howEnd){
 	string fn = fileName.str();
 	stringstream istream;
 
-	istream << "Ended because: " << howEnd << " (0 is time ran out, 1 is 95% cancer) \n";
+	istream << "Ended because: " << howEnd << " (0 is time ran out or out of events, 1 is 95% cancer) \n";
 	istream << "Seed: " << RAND_SEED << "\n";
 	istream << "GRID_SIDE: " << GRID_SIDE << "\n";
 	istream << "Blood radius: " << BLOOD_RADIUS << "\n";
@@ -110,7 +110,7 @@ void WriteParams(int howEnd){
 void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
 	stringstream fileName;
 
-	fileName << "..\\Output\\Working\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
+	fileName << "..\\Output\\Working" << "\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
 	string fn = fileName.str();
 	stringstream istream;
 
@@ -136,7 +136,6 @@ void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list
 * Run a simulation based on set of boolean parameters
 */
 int RunSimulation(Combo c, int it){
-	//srand(1234); in main
 
 	//Set up hallmarks for analysis
 	//They are stored in the combo I passed in
@@ -180,9 +179,9 @@ int RunSimulation(Combo c, int it){
 	int aliveNormal = 1;
 	double cancerPercent = 0;
 
-	//Santos uses an event queue
+	//Set time to 0
 	int time = 0;
-	//Attempting to check if time has changed and only then update... TO-DO
+	//Only update binary fluid if the time has changed
 	bool timeChanged = false;
 
 	//Priority queue 
@@ -206,21 +205,17 @@ int RunSimulation(Combo c, int it){
 
 	//temp int counter
 	int counter = 0;
-
-	//TO-DO
-	//Somethign iswrong with dying.. even if a cell state changes to 1, it doesn't change
-	//the state variable in all cells.. even for the same i and j position... state isn't getting changed right
-	//Is what is on all cells not a proper pointer? Why isn't it being updated?
-
+	
+	//Main body of simulator
+	//While there are still events to process, the simulation hasn't been going for too long and the tumour isn't completely cancerous, keep simulating
 	while ((!(events.empty())) && (counter<35000) && (cancerPercent < END_PERCENT)){
 
 		//Get next event
 		currentEvent = events.top();
-		//Do the simulation steps...
 		//Get the current cell
 		currentCell = currentEvent.getCell();
+		//Only do anythign with it if the cell is alive (dead cells don't grow or consume oxygen)
 		if (currentCell->getState() == ALIVE){
-
 			//Get the time of this operation from the queue
 			timeChanged = false;
 			currentTime = currentEvent.getTime();
@@ -228,7 +223,6 @@ int RunSimulation(Combo c, int it){
 				time = currentTime;
 				timeChanged = true;
 			}
-
 
 			//Check if it died (random cell death)
 			if (currentCell->died()) //if it dies, move on to next cell.. 
@@ -262,6 +256,7 @@ int RunSimulation(Combo c, int it){
 				telomere = true;
 			}
 			else {
+				//If the cell is out of telomere then it is dead
 				currentCell->setToDead();
 			}
 			//Check Hallmark 5 .. within blood range or has angiogenesis turned on
@@ -271,6 +266,7 @@ int RunSimulation(Combo c, int it){
 				blood = true;
 			}
 			else {
+				//If cell is out of blood (and therefore oxygen) it dies
 				currentCell->setToDead();
 			}
 			//Apply immune system
@@ -278,12 +274,19 @@ int RunSimulation(Combo c, int it){
 
 			//2/3
 			//Check if the cell has oxygen
+			//Check that the cell is still alive Jenna to-do
 			double oxygenAmount = binaryGrid.getOxygenValue(currentCell->geti(), currentCell->getj());
 			bool enoughOxygen = currentCell->checkOxygen(oxygenAmount);
 			//if there is enough oxygen, consume it
 			if (enoughOxygen){
 				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), OXYGEN_CONSUMPTION);
 				currentCell->markConsumedOxy(true);
+				//I think markin it this way but *not* checking it here 
+				//eans it will consume each time it is actively involved in
+				//a mitosis and comes up in the queue, but won't re-consume
+				//when we are doing the big oxygen check.. Mark?
+				//Perhaps this should be inside? Or just last once we know
+				//it is making it through all the changes?
 			}
 
 			//Check if the cell is "trapped".. if it has no space,
@@ -295,17 +298,10 @@ int RunSimulation(Combo c, int it){
 			//If all of the above conditions are satisfied, we perform mitosis 
 			if (canGrow && space && telomere && blood && (cellAlive == ALIVE) && enoughOxygen){
 				//Perform mitosis
-				//TO-DO
-				//When generating time un the daughter event, if the 
-				//daughter is on the diagonal, do between 
-				//7 and 14 steps for the random number to take into account
-				//the sqrt(2) distance on the diagonal
-
 				//Create a daughter cell and add it to the list; increment counter
-				//daughterCell = new Cell(currentCell);
 				daughterCell = new Cell(*currentCell); //Call copy constructor BUT 
-				//set its own i,j, telomere and neighbours
-
+				//set its own i,j, telomere and neighbours later on
+				//TO-DO Jenna updated telomere?
 
 				//This daugther cell needs to be a copy... except for the telomere.. it should
 				//start out high again...
@@ -334,7 +330,7 @@ int RunSimulation(Combo c, int it){
 				//push this cell onto the list of all cells, and increase cell count
 				allCells->push_back(daughterCell); cellCount++;
 				//Create the new event and then push it onto the queue
-				newEvent1 = new Event(*daughterCell, time); //is this okay? Mark? Because I reassign this pointer and put it on the queue... 
+				newEvent1 = new Event(*daughterCell, time, newDir); //is this okay? Mark? Because I reassign this pointer and put it on the queue... 
 				//will I be losing references to that which is on the queue?
 				events.push(*newEvent1);
 				//Jenna added this if
@@ -349,10 +345,8 @@ int RunSimulation(Combo c, int it){
 		events.pop(); //This removes the older event
 		counter++;
 
-		//Every 100 time steps update other oxygen?
-		//Check with Mark
+		//Check with Mark as to how many steps
 		//Also counts how many cancer cells there are
-
 		if ((timeChanged == true) && (time % 25 == 0)){
 			
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
@@ -393,20 +387,12 @@ int RunSimulation(Combo c, int it){
 				return 1;
 			}
 			cancerCount = 0; //Reset it because we don't want to be adding to it
-			aliveNormal = 1;
+			aliveNormal = 1; //keep at 1 so we don't get divide by 0 error if there are no alive cells left
 
 			//Update binary fluid
 			//2/10
 
 			binaryGrid.updateBinaryFluidSmall();
-
-			//All cells have been updated for oxygen
-			//Reset the oxygen consumming flags to false for the next round.. did it up above
-			//iterator = allCells->begin();
-			//iterator2 = allCells->end();
-			//for (; iterator != iterator2; ++iterator) {
-			//	(*iterator)->markConsumedOxy(false);
-			//}
 		}
 
 	//	Write out every x timesteps
@@ -416,11 +402,6 @@ int RunSimulation(Combo c, int it){
 			WriteToFile(iterator, counter, iterator2, c.code, it);
 		}
 	}
-
-	////Write out information now that we are done
-	//std::list<Cell *>::const_iterator iterator = allCells->begin();
-	//std::list<Cell *>::const_iterator iterator2 = allCells->end();
-	//WriteToFile(iterator, -1, iterator2, c.code, it);
 
 	for (std::list<Cell *>::const_iterator iterator = allCells->begin(), end = allCells->end(); iterator != end; ++iterator) {
 		//(*iterator)->print();
@@ -437,7 +418,7 @@ list<Combo> * allCombos = new list<Combo>();
 
 void generateGroups() {
 	Combo c1 = {"a", 1, 1, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c1);
-	//Combo c2 = {"b", 0, 0, 1, 1, 1};	allCombos->push_back(c2);
+	//Combo c2 = {"b", 0, 0, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c2);
 	//Combo c3 = {"c", 0, 1, 0, 1, 1};	allCombos->push_back(c3);
 	//Combo c4 = {"d", 0, 1, 1, 0, 1};	allCombos->push_back(c4);
 	//Combo c5 = {"e", 0, 1, 1, 1, 0};	allCombos->push_back(c5);
@@ -467,6 +448,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	srand(RAND_SEED);
 
+	
 
 	//Turn on loop for multiple comparissions 
 	//for (int i=0; i<10; i++){
