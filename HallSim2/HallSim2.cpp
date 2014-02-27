@@ -208,8 +208,8 @@ int RunSimulation(Combo c, int it){
 	
 	//Main body of simulator
 	//While there are still events to process, the simulation hasn't been going for too long and the tumour isn't completely cancerous, keep simulating
-	while ((!(events.empty())) && (counter<35000) && (cancerPercent < END_PERCENT)){
-
+	//while ((!(events.empty())) && (counter<20000) && (cancerPercent < END_PERCENT)){
+	while ((!(events.empty())) && (counter<20000)){
 		//Get next event
 		currentEvent = events.top();
 		//Get the current cell
@@ -229,8 +229,11 @@ int RunSimulation(Combo c, int it){
 				continue;
 			//Check for apoptosis
 			if (currentCell->isMutated()) {
-				if (currentCell->apoptosis()==true) //if it dies via apoptosis, move on
+				if (currentCell->apoptosis()==true) { //if it dies via apoptosis, move on
+					events.pop(); //This removes the older event
+					counter++;
 					continue;
+				}
 			}
 
 			//Next, do the 3 mitosis checks:
@@ -383,9 +386,9 @@ int RunSimulation(Combo c, int it){
 				}
 			}
 			cancerPercent = cancerCount/aliveNormal; //TO-DO change this to be ALIVE cancer and ALIVE regular... hm...
-			if (cancerPercent > END_PERCENT){
-				return 1;
-			}
+			//if (cancerPercent > END_PERCENT){
+				//return 1;
+			//}
 			cancerCount = 0; //Reset it because we don't want to be adding to it
 			aliveNormal = 1; //keep at 1 so we don't get divide by 0 error if there are no alive cells left
 
@@ -401,7 +404,12 @@ int RunSimulation(Combo c, int it){
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
 			WriteToFile(iterator, counter, iterator2, c.code, it);
 		}
+
 	}
+
+	std::list<Cell *>::const_iterator iterator = allCells->begin();
+	std::list<Cell *>::const_iterator iterator2 = allCells->end();
+	WriteToFile(iterator, counter, iterator2, c.code, it);
 
 	for (std::list<Cell *>::const_iterator iterator = allCells->begin(), end = allCells->end(); iterator != end; ++iterator) {
 		//(*iterator)->print();
@@ -411,6 +419,7 @@ int RunSimulation(Combo c, int it){
 	delete allCells;
 	//delete start;
 	//delete firstEvent;
+
 	return 0;
 }
 

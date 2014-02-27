@@ -38,7 +38,7 @@ using namespace std;
 
 //Always correct this at the beginning
 //#define L 784
-#define L 300 //!< L is the size of the lattice grid
+#define L 900 //!< L is the size of the lattice grid
 #define Nmax 10000
 
 #define eachIteration 75 //!< eachIteration: is the number of times the fluid will update for each iteration of cancer growth
@@ -108,8 +108,8 @@ BinaryFluid::BinaryFluid(){
  * Calls initialization of the fluid, and then runs one cycle of fluid update
  */
 BinaryFluid::BinaryFluid(int cancerGridSize){
-	//scaleFactor = L/cancerGridSize;
-	scaleFactor=1; //2/3
+	scaleFactor = L/cancerGridSize;
+	//scaleFactor=1; //2/3
 	topBound = 0;
 	bottomBound = L-1;
 	leftBound = 0;
@@ -553,7 +553,7 @@ void BinaryFluid::consumeOxygen(int i, int j, double amount){
 	//}
 	//currentOxygenAtLocation = 0.5*(density[i][j] - phi[i][j]);
 
-	int scaleFactor = 1;
+	
 	int oxyI = i*scaleFactor;
 	int oxyJ = j*scaleFactor;
 	int boundaryI = oxyI + scaleFactor;
@@ -561,11 +561,11 @@ void BinaryFluid::consumeOxygen(int i, int j, double amount){
 
 	//oxygenAmount: array to hold the total amount of oxygen
 	//              that needs to be removed from each LB grid site.
-	double oxygenAmount[1][1];
+	double oxygenAmount[3][3];
 
 	//hasOxy: set to: 0 if the site no longer has oxygen that can be removed.
 	//              : 1 if oxygen is still available
-	int hasOxy[1][1]; 
+	int hasOxy[3][3]; 
 
 	double currentOxygenAtLocation;
 
@@ -594,93 +594,94 @@ void BinaryFluid::consumeOxygen(int i, int j, double amount){
 			}
 		}
 	}
+	//else {
+	//	cout << "not enough";
+	//}
 	//MARK not doing the weird tiny oxygen consumption thing for now
 
-	//cout << Ff[i][j][2];
-	// oxygenTest1 =  0.5*(density[oxyI][oxyJ] - phi[oxyI][oxyJ]);
-	//// If there is not enough oxygen at each site, take away as much as possible
-	////  from the sites that don't have enough, and then evenly distribute the 
-	////  leftover amount amoungst the remaining sites (always checking to make sure a 
-	////  site has enough oxygen available).
-	//else{
+	// If there is not enough oxygen at each site, take away as much as possible
+	//  from the sites that don't have enough, and then evenly distribute the 
+	//  leftover amount amoungst the remaining sites (always checking to make sure a 
+	//  site has enough oxygen available).
+	else{
 
-	//	//Set the total remaining oxygen that needs to be removed by the
-	//	// cancer cell.
-	//	double remainingOxy = amount*scaleFactor*scaleFactor;
-	//	double remainingOxy_old;
+		//Set the total remaining oxygen that needs to be removed by the
+		// cancer cell.
+		double remainingOxy = amount*scaleFactor*scaleFactor;
+		double remainingOxy_old;
 
-	//	//Initialize the oxygenAmount array to 0.0, indicating that no oxygen has
-	//	// been set aside to be removed yet.
-	//	//Initialize the hasOxy array to 1, indicating that at each lattice-Boltzmann
-	//	// grid point there is oxygen available to be removed.
-	//	for(int m=0; m<scaleFactor; m++){
-	//		for(int n=0; n<scaleFactor; n++){
-	//			oxygenAmount[m][n] = 0.0;
-	//			hasOxy[m][n] = 1;
-	//		}
-	//	}
+		//Initialize the oxygenAmount array to 0.0, indicating that no oxygen has
+		// been set aside to be removed yet.
+		//Initialize the hasOxy array to 1, indicating that at each lattice-Boltzmann
+		// grid point there is oxygen available to be removed.
+		for(int m=0; m<scaleFactor; m++){
+			for(int n=0; n<scaleFactor; n++){
+				oxygenAmount[m][n] = 0.0;
+				hasOxy[m][n] = 1;
+			}
+		}
 
-	//	//Set the number of lattice Boltzmann sites that still have oxygen
-	//	// that can be removed.
-	//	int numOxy = scaleFactor*scaleFactor;
-	//	int numOxy_old;
+		//Set the number of lattice Boltzmann sites that still have oxygen
+		// that can be removed.
+		int numOxy = scaleFactor*scaleFactor;
+		int numOxy_old;
 
-	//	while(remainingOxy > 1.0e-10){
-	//		numOxy_old = numOxy;
-	//		numOxy = 0;
+		while(remainingOxy > 1.0e-10){
+			numOxy_old = numOxy;
+			numOxy = 0;
 
-	//		remainingOxy_old = remainingOxy;
-	//		remainingOxy = 0.0;
+			remainingOxy_old = remainingOxy;
+			remainingOxy = 0.0;
 
-	//		for (oxyI=i*scaleFactor; oxyI < boundaryI; oxyI++){
-	//			for (oxyJ=j*scaleFactor; oxyJ<boundaryJ; oxyJ++){
+			for (oxyI=i*scaleFactor; oxyI < boundaryI; oxyI++){
+				for (oxyJ=j*scaleFactor; oxyJ<boundaryJ; oxyJ++){
 
-	//				//If the site still has available oxygen:
-	//				if(hasOxy[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] == 1){
+					//If the site still has available oxygen:
+					if(hasOxy[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] == 1){
 
-	//					//Calculate the available oxygen (need to subtract off the
-	//					// amount that already needs to be consumed).
-	//					currentOxygenAtLocation = 0.5*(density[oxyI][oxyJ] - phi[oxyI][oxyJ]) -
-	//							oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor];
+						//Calculate the available oxygen (need to subtract off the
+						// amount that already needs to be consumed).
+						currentOxygenAtLocation = 0.5*(density[oxyI][oxyJ] - phi[oxyI][oxyJ]) -
+								oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor];
 
-	//					//Want to remove the remaining amount of oxygen (remainingOxy_old),
-	//					// evenly distributed amoungst the LB sites that still have oxygen available.
+						//Want to remove the remaining amount of oxygen (remainingOxy_old),
+						// evenly distributed amoungst the LB sites that still have oxygen available.
 
-	//					//If there isn't enough oxygen at the site:
-	//					if (currentOxygenAtLocation < remainingOxy_old/numOxy_old) {
+						//If there isn't enough oxygen at the site:
+						if (currentOxygenAtLocation < remainingOxy_old/numOxy_old) {
 
-	//						//Flag the site, remove all of the oxygen at the site, and calculate
-	//						// the remaining oxygen that will now need to be removed in the next
-	//						// iteration, by the remaining LB sites that still have oxygen.
-	//						hasOxy[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] = 0;
-	//						oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] += currentOxygenAtLocation;
-	//						remainingOxy += remainingOxy_old/numOxy_old - currentOxygenAtLocation;
-	//					}
+							//Flag the site, remove all of the oxygen at the site, and calculate
+							// the remaining oxygen that will now need to be removed in the next
+							// iteration, by the remaining LB sites that still have oxygen.
+							hasOxy[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] = 0;
+							oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] += currentOxygenAtLocation;
+							remainingOxy += remainingOxy_old/numOxy_old - currentOxygenAtLocation;
+						}
 
-	//					//If there is enough oxygen at the site:
-	//					else{
+						//If there is enough oxygen at the site:
+						else{
 
-	//						//Remove the requested amount of oxygen, and add this site to the
-	//						// count of LB sites that still have available oxygen.
-	//						oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] += remainingOxy_old/numOxy_old;
-	//						numOxy++;
+							//Remove the requested amount of oxygen, and add this site to the
+							// count of LB sites that still have available oxygen.
+							oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor] += remainingOxy_old/numOxy_old;
+							numOxy++;
 
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
+						}
+					}
+				}
+			}
+		}
 
-	//	// Remove the oxygen:
-	//	for (oxyI=i*scaleFactor; oxyI < boundaryI; oxyI++){
-	//		for (oxyJ=j*scaleFactor; oxyJ<boundaryJ; oxyJ++){
-	//			for(int k=0; k<9; k++){
-	//				Ff[oxyI][oxyJ][k] = oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor]/9.0;
-	//			}
-	//		}
-	//	}
+		// Remove the oxygen:
+		for (oxyI=i*scaleFactor; oxyI < boundaryI; oxyI++){
+			for (oxyJ=j*scaleFactor; oxyJ<boundaryJ; oxyJ++){
+				for(int k=0; k<9; k++){
+					Ff[oxyI][oxyJ][k] = oxygenAmount[oxyI-i*scaleFactor][oxyJ-j*scaleFactor]/9.0;
+				}
+			}
+		}
 
-	//}
+	}
 }
 
 /**

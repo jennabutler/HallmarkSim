@@ -259,7 +259,7 @@ namespace std {
 		if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RADIUS,2))){
 			return true;
 		}
-		else if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RAIDUS_2,2))) {
+		else if (((pow((i-GROWTH_H),2)) + (pow((j-GROWTH_K),2))) <= (pow(GROWTH_RADIUS_2,2))) {
 			if (within < 6)
 				return true;
 			return false;
