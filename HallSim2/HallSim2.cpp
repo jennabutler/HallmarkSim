@@ -426,8 +426,8 @@ int RunSimulation(Combo c, int it){
 list<Combo> * allCombos = new list<Combo>();
 
 void generateGroups() {
-	Combo c1 = {"a", 1, 1, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c1);
-	//Combo c2 = {"b", 0, 0, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c2);
+	//Combo c1 = {"a", 1, 1, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c1);
+	Combo c2 = {"b", 0, 0, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c2);
 	//Combo c3 = {"c", 0, 1, 0, 1, 1};	allCombos->push_back(c3);
 	//Combo c4 = {"d", 0, 1, 1, 0, 1};	allCombos->push_back(c4);
 	//Combo c5 = {"e", 0, 1, 1, 1, 0};	allCombos->push_back(c5);

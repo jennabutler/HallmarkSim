@@ -62,9 +62,11 @@ namespace std {
 		ignoreTelomere = false;
 		susAngio = false;
 		//deregulateCellEnergetics = false;
-		immuneDeathLiklihood = 0;
+		immuneDeathLiklihood = 1000;
 		avoidImmunity = false;
 		genomicInstability = false;
+		angiogenesisImmunity = 10;
+		avoidImmuneParam = 10;
 
 		//Each round there is a flag for whether or not a cell has
 		//consumed any oxygen...
@@ -510,9 +512,9 @@ namespace std {
 		if ((mutHall == (mutationRate)) && (EMERGE2 == true)){
 			//Turn on emerging hallmark 2
 			avoidImmunity = true;
+			mutated = true;
 			//Now that mutated, update the liklihood cell will be killed by immune system
 			updateImmuneDeathLiklihood();
-			mutated = true;
 		}
 		//No effect in the code 
 		//mutHall = rand() % mutahtionRate + 0;
@@ -548,12 +550,17 @@ namespace std {
 	void Cell::updateImmuneDeathLiklihood(){
 		//If you are on the blood system, you have a higher chance
 		//of being killed by the immune system (1 in 100)
-		if (susAngio == true || neighbourSusAngio() == true){
-			immuneDeathLiklihood = 100;
-		}
-		//If not on the blood system, a 1 in 1000 chance of death by immune system
-		else {
+		if (mutated){
+			//Base immune death chance if a cancer cell
 			immuneDeathLiklihood = 1000;
+		}
+		//If on the blood system you have a 10 times higher chance
+		if (susAngio == true || neighbourSusAngio() == true){
+			immuneDeathLiklihood = immuneDeathLiklihood/angiogenesisImmunity;
+		}
+		//If you avoid immunity, you are 10 times less likely to be killed
+		if (avoidImmunity) {
+			immuneDeathLiklihood = immuneDeathLiklihood*avoidImmuneParam;
 		}
 	}
 

@@ -131,6 +131,8 @@ private:
 	//bool deregulateCellEnergetics; //Hallmark 7... not sure how to do this one
 	int immuneDeathLiklihood; //cell with n hallmarks has n/x liklihook of being killed by immune system unless avoid immune is one //Hallmark 8
 	bool genomicInstability; //Enabiling characteristic 2.
+	int angiogenesisImmunity;
+	int avoidImmuneParam;
 
 	//Oxygen 
 	bool consumed;
