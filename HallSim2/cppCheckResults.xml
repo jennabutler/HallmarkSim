@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results version="2">
+    <cppcheck version="1.63.1"/>
+    <errors>
+        <error id="unusedVariable" severity="style" msg="Unused variable: n" verbose="Unused variable: n">
+            <location file="BinaryFluid.cpp" line="149"/>
+        </error>
+        <error id="unusedVariable" severity="style" msg="Unused variable: oxygenAmount" verbose="Unused variable: oxygenAmount">
+            <location file="BinaryFluid.cpp" line="567"/>
+        </error>
+        <error id="unusedVariable" severity="style" msg="Unused variable: hasOxy" verbose="Unused variable: hasOxy">
+            <location file="BinaryFluid.cpp" line="571"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;oxygenTest1&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;oxygenTest1&amp;#039; is assigned a value that is never used.">
+            <location file="BinaryFluid.cpp" line="586"/>
+        </error>
+        <error id="unusedVariable" severity="style" msg="Unused variable: fileName" verbose="Unused variable: fileName">
+            <location file="BinaryFluid.cpp" line="720"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;newSpot&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;newSpot&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:&#10;void f(int x)&#10;{&#10;    int i = 0;&#10;    if (x) {&#10;        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here&#10;        for (int n = 0; n &amp;lt; 10; ++n) {&#10;            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here&#10;            do_something(&amp;amp;i);&#10;        }&#10;    }&#10;}&#10;When you see this message it is always safe to reduce the variable scope 1 level.">
+            <location file="Cell.cpp" line="416"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;newK&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;newK&amp;#039; is assigned a value that is never used.">
+            <location file="Cell.cpp" line="593"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;neigh&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;neigh&amp;#039; is assigned a value that is never used.">
+            <location file="Cell.cpp" line="747"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;timePoint&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;timePoint&amp;#039; is assigned a value that is never used.">
+            <location file="Event.cpp" line="11"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;Event::currentCell&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;Event::currentCell&amp;#039; is not initialized in the constructor.">
+            <location file="Event.cpp" line="8"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;timeUpdate&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;timeUpdate&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:&#10;void f(int x)&#10;{&#10;    int i = 0;&#10;    if (x) {&#10;        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here&#10;        for (int n = 0; n &amp;lt; 10; ++n) {&#10;            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here&#10;            do_something(&amp;amp;i);&#10;        }&#10;    }&#10;}&#10;When you see this message it is always safe to reduce the variable scope 1 level.">
+            <location file="HallSim.cpp" line="315"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;cellTotal&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;cellTotal&amp;#039; is assigned a value that is never used.">
+            <location file="HallSim.cpp" line="87"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;oldTime&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;oldTime&amp;#039; is assigned a value that is never used.">
+            <location file="HallSim.cpp" line="152"/>
+        </error>
+        <error id="stlSize" severity="performance" msg="Possible inefficient checking for &amp;#039;events&amp;#039; emptiness." verbose="Checking for &amp;#039;events&amp;#039; emptiness might be inefficient. Using events.empty() instead of events.size() can be faster. events.size() can take linear time but events.empty() is guaranteed to take constant time.">
+            <location file="HallSim.cpp" line="180"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;timeUpdate&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;timeUpdate&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:&#10;void f(int x)&#10;{&#10;    int i = 0;&#10;    if (x) {&#10;        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here&#10;        for (int n = 0; n &amp;lt; 10; ++n) {&#10;            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here&#10;            do_something(&amp;amp;i);&#10;        }&#10;    }&#10;}&#10;When you see this message it is always safe to reduce the variable scope 1 level.">
+            <location file="HallSim2.cpp" line="316"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;cellTotal&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;cellTotal&amp;#039; is assigned a value that is never used.">
+            <location file="HallSim2.cpp" line="88"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;oldTime&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;oldTime&amp;#039; is assigned a value that is never used.">
+            <location file="HallSim2.cpp" line="153"/>
+        </error>
+        <error id="stlSize" severity="performance" msg="Possible inefficient checking for &amp;#039;events&amp;#039; emptiness." verbose="Checking for &amp;#039;events&amp;#039; emptiness might be inefficient. Using events.empty() instead of events.size() can be faster. events.size() can take linear time but events.empty() is guaranteed to take constant time.">
+            <location file="HallSim2.cpp" line="181"/>
+        </error>
+    </errors>
+</results>
