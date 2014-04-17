@@ -22,7 +22,7 @@ namespace std {
 	};
 
 	enum State {
-		ALIVE, DEAD, QUIS, APOP
+		ALIVE, DEAD, QUIS, APOP, NEC, IM_DEAD, AGG1, AGG2, AGG3, GLY
 	};
 
 	/** 
@@ -75,7 +75,8 @@ namespace std {
 		//If it has already consumed because of mutation
 		//it doesn't do it in the time step check
 		consumed = false;
-
+		requiredOxy = OXYGEN_CON_HEALTHY;
+		numMuts = 0;
 	}
 
 	Cell::~Cell()
@@ -100,7 +101,8 @@ namespace std {
 		int x = rand() % randomDeathRate + 1;
 		if (x == randomDeathRate) {
 			//state = DEAD;
-			setToDead();
+			//setToDead();
+			setState(DEAD);
 			return true;
 		}
 		return false;
@@ -139,8 +141,8 @@ namespace std {
 		double apopChance = ((float)(mutCount)/evadeApoptosis)*evadeApoptosis;
 		int x = rand() % evadeApoptosis + 1;
 		if (x <= apopChance){ //Cell dies via apoptosis
-			//state = DEAD;
-			setToDead();
+			//setToDead();
+			setState(APOP); //cell dies via apoptosis
 			return true;
 		}
 		return false;
@@ -342,7 +344,8 @@ namespace std {
 			//Generate a number between 1 and the likelihood
 			int immuneDeathChance = rand() % immuneDeathLiklihood + 1;
 			if (immuneDeathChance == immuneDeathLiklihood){
-				setToDead(); //TO-DO
+				//setToDead(); //TO-DO
+				setState(IM_DEAD);
 				return true; //Cell has been killed
 			}
 			else {
@@ -484,7 +487,6 @@ namespace std {
 			ignoreGrowthInhibition = true;
 			mutated = true;
 			updateImmuneDeathLiklihood();
-
 		}
 		mutHall = rand() % mutationRate + 1;
 		if ((mutHall == mutationRate) && (HALL3 == true)){
@@ -507,6 +509,15 @@ namespace std {
 			mutated = true;
 			updateImmuneDeathLiklihood();
 		}
+		//TO-DO THIS HALLMARK HAS NOT BEEN TESTED JENNA //4/17
+		mutHall = rand() % mutationRate + 1;
+		if ((mutHall == (mutationRate)) && (EMERGE1 == true)){
+			//Turn on emerging hallmark 2
+			deregCellEnergetics = true;
+			mutated = true;
+			//Now that mutated, update the liklihood cell will be killed by immune system
+			updateImmuneDeathLiklihood();
+		}
 		//TO-DO Look up a proper parameter for this value (Abbott?)
 		mutHall = rand() % mutationRate + 1;
 		if ((mutHall == (mutationRate)) && (EMERGE2 == true)){
@@ -516,13 +527,6 @@ namespace std {
 			//Now that mutated, update the liklihood cell will be killed by immune system
 			updateImmuneDeathLiklihood();
 		}
-		//No effect in the code 
-		//mutHall = rand() % mutahtionRate + 0;
-		//if ((mutHall  > (mutationRate-5))&& (HALL8 == true)){
-		//	//Turn on hallmark 8
-		//	avoidImmunity = true;
-		//	mutated = true;
-		//}
 		mutHall = rand() % mutationRate + 1;
 		if ((mutHall == mutationRate)&& (ENABLE2 == true)){
 			//Turn on enabling characteristc 2
@@ -542,6 +546,50 @@ namespace std {
 		//	mutationRateUpdate();
 		//}
 	}
+
+	/**
+	Count the number of mutations a cells has
+	Jenna: Not tested
+	*/
+	void Cell::calcNumMuts(){
+		int current = 0;
+		if (selfGrowth) current++;
+		if (ignoreGrowthInhibition) current++;
+		if (avoidApoptosis) current++;
+		if (ignoreTelomere) current++;
+		if (susAngio) current++;
+		if (deregCellEnergetics) current++;
+		if (avoidImmunity) current++;
+		if (genomicInstability) current++;
+
+		numMuts = calcNumMuts;
+		calcRequiredOxy();
+	}
+
+	/**
+	* Calculate how much oxygen a cell requires based on number of mutations (aggressive)
+	**/
+	void Cell::calcRequiredOxy(){
+		if (deregCellEnergetics) {
+			requiredOxy = OXYGEN_DEREG;
+		}
+		else if (numMuts == 8){ //most aggressive phenotype
+			requiredOxy = OXYGEN_CON_CANCER_AGG3;
+		}
+		else if (numMuts == 6) {
+			requiredOxy = OXYGEN_CON_CANCER_AGG2;
+		}
+		else if (numMuts == 4) {
+			requiredOxy = OXYGEN_CON_CANCER_AGG1;
+		}
+		else if (state == QUIS) {
+			requiredOxy == OXYGEN_CON_QUIS;
+		}
+		else {
+			requiredOxy = OXYGEN_CON_HEALTHY;
+		}
+	}
+
 
 	/**
 	* Method to update the immune death liklihood parameter
@@ -575,17 +623,26 @@ namespace std {
 		//Should we do the blood one? Mark
 		//if (!(mutated) && !(withinBloodRange()) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 		if ((!(mutated)) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
-			setToDead();
+			//setToDead();
+			setState(DEAD); //just random cell death flag... should it be a special type?
 		}
+	}
+
+	/**
+	Method to set oxygen requirements
+	*/
+	void Cell::setRequiredOxygen(double newOxy){
+	
 	}
 
 	/** Method to test if enough oxygen to live
 	//2/3
+	* Alive healthy cells have a certain required oxygen amount
+	* Alive quiescent cells require about half that
+	* Alive cancer cells have 3 different oxygen requirements, all slightly more aggressive
+	* Alive cancer cells with deregulated energetics have same oxygen consumption as quiescent
 	*/
-	bool Cell::checkOxygen(double oxygenAmount){
-		if (oxygenAmount >= OXYGEN_CONSUMPTION){
-			return true;
-		}
+	bool Cell::checkOxygen(double oxygenAmount, int cellState){
 		//Mark: I'm not sure about this
 		//I only want to consume oxygen if there is enough there to remove 
 		//from the lbm system
@@ -593,10 +650,22 @@ namespace std {
 		//from the system? It should in reality, but our system 
 		//doesn't infuse oxygen into the system, so I feel like the 
 		//angiogenic ones shouldn't remove it perhaps?
-		else if (angiogenesis() == true){
+		if (angiogenesis() == true || neighbourSusAngio() == true){
 			return true;
 		}
-		else if (neighbourSusAngio() == true){
+		if ((cellState == ALIVE) && (oxygenAmount >= OXYGEN_CON_HEALTHY)){
+			return true;
+		}
+		else if ((cellState == QUIS) && (oxygenAmount >= OXYGEN_CON_QUIS)){
+			return true;
+		}
+		else if ((cellState == AGG1) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG1)){
+			return true;
+		}
+		else if ((cellState == AGG2) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG2)){
+			return true;
+		}
+		else if ((cellState == AGG3) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG3)){
 			return true;
 		}
 		else {
@@ -621,6 +690,14 @@ namespace std {
 	*/
 	void Cell::setToDead(){
 		state = DEAD;
+	}
+
+	/**
+	* Set the state
+	* @param: enum state (alive, dead, quis, apop, nec, im_dead)
+	*/
+	void Cell::setState(int stateType){
+		state = stateType;
 	}
 
 

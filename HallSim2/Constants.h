@@ -41,7 +41,14 @@ const int RIGHT_GROWTH = 200; //2600
 const int TOP_GROWTH = 50; //1500
 const int BOTTOM_GROWTH = GRID_SIDE;
 
-const double OXYGEN_CONSUMPTION = 0.019;
+//Oxygen consumption rates
+const double OXYGEN_CON_HEALTHY = 0.019;
+const double OXYGEN_CON_QUIS = 0.0095;
+const double OXYGEN_DEREG = 0.0095;
+const double OXYGEN_CON_CANCER_AGG1 = 0.017;
+const double OXYGEN_CON_CANCER_AGG2 = 0.015;
+const double OXYGEN_CON_CANCER_AGG3 = 0.013;
+
 //0.011
 
 const int MUTATION_RATE = 500;

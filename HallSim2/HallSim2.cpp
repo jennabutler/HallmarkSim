@@ -69,6 +69,7 @@ struct Combo {
 	//bool h7;
 	//bool h8;
 	bool e2;
+	bool em1;
 	bool em2;
 };
 
@@ -150,6 +151,7 @@ int RunSimulation(Combo c, int it){
 	//HALL7 = c.h7;
 	//HALL8 = c.h8;
 	ENABLE2 = c.e2;
+	EMERGE1 = c.em1;
 	EMERGE2 = c.em2;
 
 	//Create the grid the cells are on
@@ -357,13 +359,14 @@ int RunSimulation(Combo c, int it){
 			double oxygenAmount;
 			bool enoughOxygen;
 			//Go through and have all cells consume oxygen
-			//If the cell is alive, it should consume oxygen
+			//If the cell is alive, it should consume healthy cell oxygen levels
+			//If it is quiescent it should consume half that
 			//If its trapped, it dies
 			for (; iterator != iterator2; ++iterator) {
 				//(*iterator)->checkTrapped(); //add oxygen to trapped
-				if (((*iterator)->getState() == ALIVE) && ((*iterator)->hasAlreadyConsumedOxy() == false)) {
+				if ((((*iterator)->getState() == ALIVE || (*iterator)->getState() == QUIS)) && ((*iterator)->hasAlreadyConsumedOxy() == false)) {
 					oxygenAmount = binaryGrid.getOxygenValue((*iterator)->geti(), (*iterator)->getj());
-					enoughOxygen = (*iterator)->checkOxygen(oxygenAmount);
+					enoughOxygen = (*iterator)->checkOxygen(oxygenAmount, (*iterator)->getState());
 					//If the cell has enough oxygen, conusme it
 					if (enoughOxygen){
 						binaryGrid.consumeOxygen((*iterator)->geti(), (*iterator)->getj(), OXYGEN_CONSUMPTION);

@@ -13,4 +13,5 @@ int g_nValue = 5;
  bool HALL7 = true;
  //bool HALL8 = true;
  bool ENABLE2 = true;
+ bool EMERGE1 = true;
  bool EMERGE2 = true;

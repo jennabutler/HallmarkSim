@@ -48,6 +48,7 @@ public:
 	void decreaseTelomere() { telomere--; }
 	void mutationRateUpdate();
 	void setToDead();
+	void setState(int stateType);
 	void updateImmuneDeathLiklihood();
 	void checkTrapped();
 
@@ -57,7 +58,7 @@ public:
 	bool killedByImmune();
 	bool neighbourSusAngio();
 	int compete();
-	bool checkOxygen(double oxygenAmount);
+	bool checkOxygen(double oxygenAmount, int cellState);
 	void markConsumedOxy(bool consumedOxygen) { consumed = consumedOxygen; }
 	bool hasAlreadyConsumedOxy() { return consumed; }
 
@@ -84,6 +85,12 @@ public:
 	int getImmuneDeathLiklihood() { return immuneDeathLiklihood; }
 	bool avoidsImmunity() { return avoidImmunity; }
 	bool genomeUnstable() { return genomicInstability; }
+
+	//oxygen stuff
+	double getRequiredOxygey() { return requiredOxy; }
+	void setRequiredOxygen(double newOxy);
+	int getNumMuts() { return numMuts; }
+	void calcNumMuts();
 
 	//Setters for hallmarks if cancerous
 	void setSelfGrowth(bool self) { selfGrowth = self; }
@@ -128,7 +135,7 @@ private:
 	bool avoidImmunity; //Emerging hallmark 2
 
 	//Hallmark 6 is ignored because it is after avascular growth
-	//bool deregulateCellEnergetics; //Hallmark 7... not sure how to do this one
+	bool deregCellEnergetics; //Hallmark 7... not sure how to do this one
 	int immuneDeathLiklihood; //cell with n hallmarks has n/x liklihook of being killed by immune system unless avoid immune is one //Hallmark 8
 	bool genomicInstability; //Enabiling characteristic 2.
 	int angiogenesisImmunity;
@@ -136,7 +143,9 @@ private:
 
 	//Oxygen 
 	bool consumed;
-
+	double requiredOxy;
+	int numMuts; //number of mutations a cell has 
+	void calcRequiredOxy();
 };
  
  

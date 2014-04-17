@@ -12,6 +12,7 @@ extern bool HALL5;
 //extern bool HALL7;
 //extern bool HALL8;
 extern bool ENABLE2;
+extern bool EMERGE1;
 extern bool EMERGE2;
  
 #endif
