@@ -284,7 +284,7 @@ int RunSimulation(Combo c, int it){
 			if (enoughOxygen){
 				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), OXYGEN_CONSUMPTION);
 				currentCell->markConsumedOxy(true);
-				//I think markin it this way but *not* checking it here 
+				//I think marking it this way but *not* checking it here 
 				//eans it will consume each time it is actively involved in
 				//a mitosis and comes up in the queue, but won't re-consume
 				//when we are doing the big oxygen check.. Mark?
