@@ -51,6 +51,8 @@ public:
 	void setState(int stateType);
 	void updateImmuneDeathLiklihood();
 	void checkTrapped();
+	bool isAlive() { return alive; }
+
 
 	//Methods not yet implemented correctly
 	bool withinGrowthFactorRange();
@@ -58,9 +60,7 @@ public:
 	bool killedByImmune();
 	bool neighbourSusAngio();
 	int compete();
-	bool checkOxygen(double oxygenAmount, int cellState);
-	void markConsumedOxy(bool consumedOxygen) { consumed = consumedOxygen; }
-	bool hasAlreadyConsumedOxy() { return consumed; }
+
 
 
 	//Virtual methods available in the cancer child
@@ -87,10 +87,12 @@ public:
 	bool genomeUnstable() { return genomicInstability; }
 
 	//oxygen stuff
-	double getRequiredOxygey() { return requiredOxy; }
-	void setRequiredOxygen(double newOxy);
+	double getRequiredOxygen() { return requiredOxy; }
 	int getNumMuts() { return numMuts; }
 	void calcNumMuts();
+	bool checkOxygen(double oxygenAmount);
+	void markConsumedOxy(bool consumedOxygen) { consumed = consumedOxygen; }
+	bool hasAlreadyConsumedOxy() { return consumed; }
 
 	//Setters for hallmarks if cancerous
 	void setSelfGrowth(bool self) { selfGrowth = self; }
@@ -124,6 +126,7 @@ private:
 
 	int state;
     bool mutated; //true if cell becomes cancerous
+	bool alive;
 
 	//Cancer cell properties... turned on if mutated becomes true
 	bool selfGrowth; //Hallmark 1

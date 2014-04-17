@@ -37,7 +37,7 @@ TO-DO: If I re run..
 ***************************************************************************/
 
 enum State {
-	ALIVE, DEAD, QUIS, APOP
+	ALIVE, DEAD, QUIS, APOP, NEC, IM_DEAD, AGG1, AGG2, AGG3, GLY
 };
 
 /**
@@ -217,7 +217,8 @@ int RunSimulation(Combo c, int it){
 		//Get the current cell
 		currentCell = currentEvent.getCell();
 		//Only do anythign with it if the cell is alive (dead cells don't grow or consume oxygen)
-		if (currentCell->getState() == ALIVE){
+		//if (currentCell->getState() == ALIVE){
+		if (currentCell->isAlive()) {
 			//Get the time of this operation from the queue
 			timeChanged = false;
 			currentTime = currentEvent.getTime();
@@ -284,7 +285,7 @@ int RunSimulation(Combo c, int it){
 			bool enoughOxygen = currentCell->checkOxygen(oxygenAmount);
 			//if there is enough oxygen, consume it
 			if (enoughOxygen){
-				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), OXYGEN_CONSUMPTION);
+				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), currentCell->getRequiredOxygen());
 				currentCell->markConsumedOxy(true);
 				//I think marking it this way but *not* checking it here 
 				//eans it will consume each time it is actively involved in
@@ -293,15 +294,30 @@ int RunSimulation(Combo c, int it){
 				//Perhaps this should be inside? Or just last once we know
 				//it is making it through all the changes?
 			}
+			//If there wasn't enough oxygen the cell should be quiescent (if enough for that)
+			//Then the cell shoudl break out of this loop
+			else if (oxygenAmount >= OXYGEN_CON_QUIS) {
+				currentCell->setState(QUIS);
+				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), OXYGEN_CON_QUIS);
+				currentCell->markConsumedOxy(true);
+				//Don't go forward with mitosis if not enough oxygen
+				break;
+			}
+			//Not even enough oxygen for quiescense..
+			else {
+				//JENNA TO-DO: check that this changes the cell state and the alive bool
+				currentCell->setState(NEC); //cell dies via apoptosis
+				break;
+			}
 
 			//Check if the cell is "trapped".. if it has no space,
 			//is outside of growth factor and outside of angiogenesis
 			//and _not_ cancerous, it is trapped and should die
 			currentCell->checkTrapped();
 			//Lastly, make sure cell is alive
-			int cellAlive = currentCell->getState();
+			bool cellAlive = currentCell->isAlive();
 			//If all of the above conditions are satisfied, we perform mitosis 
-			if (canGrow && space && telomere && blood && (cellAlive == ALIVE) && enoughOxygen){
+			if (canGrow && space && telomere && blood && (cellAlive) && enoughOxygen){
 				//Perform mitosis
 				//Create a daughter cell and add it to the list; increment counter
 				daughterCell = new Cell(*currentCell); //Call copy constructor BUT 
@@ -363,18 +379,24 @@ int RunSimulation(Combo c, int it){
 			//If it is quiescent it should consume half that
 			//If its trapped, it dies
 			for (; iterator != iterator2; ++iterator) {
-				//(*iterator)->checkTrapped(); //add oxygen to trapped
-				if ((((*iterator)->getState() == ALIVE || (*iterator)->getState() == QUIS)) && ((*iterator)->hasAlreadyConsumedOxy() == false)) {
+				//TO-DO check that my isAlive check here is working correctly
+				//All living cells should consume some level of oxygen
+				if (((*iterator)->isAlive()) && ((*iterator)->hasAlreadyConsumedOxy() == false)) {
 					oxygenAmount = binaryGrid.getOxygenValue((*iterator)->geti(), (*iterator)->getj());
-					enoughOxygen = (*iterator)->checkOxygen(oxygenAmount, (*iterator)->getState());
+					enoughOxygen = (*iterator)->checkOxygen(oxygenAmount);
 					//If the cell has enough oxygen, conusme it
 					if (enoughOxygen){
-						binaryGrid.consumeOxygen((*iterator)->geti(), (*iterator)->getj(), OXYGEN_CONSUMPTION);
+						binaryGrid.consumeOxygen((*iterator)->geti(), (*iterator)->getj(), (*iterator)->getRequiredOxygen());
 						(*iterator)->markConsumedOxy(true);
 					}
+					//Not enough oxygen to consume, so the cell becomes quiescent
+					else if (oxygenAmount >= OXYGEN_CON_QUIS) {
+						binaryGrid.consumeOxygen((*iterator)->geti(), (*iterator)->getj(), OXYGEN_CON_QUIS);
+						(*iterator)->setState(QUIS);
+					}
+					//Not enough oxygen to survive.. cell becomes necrotic
 					else {
-						//If the cell doesn't have enough oxygen, it dies
-						(*iterator)->setToDead();
+						(*iterator)->setState(NEC);
 					}
 				} //set to false hre so we don't have to go through again //check it with mark
 				//Reset it for next round

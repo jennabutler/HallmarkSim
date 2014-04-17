@@ -45,6 +45,7 @@ namespace std {
 
 		mutated = false;
 		state = ALIVE;
+		alive = true;
 
 		//Cell start at the center of the grid
 		i = (GRID_SIDE/2)+1;
@@ -539,12 +540,8 @@ namespace std {
 			mutated = true;
 			updateImmuneDeathLiklihood();
 		}
-		//Everytime through the loop there is an increased chance of
-		//changing the mutation rate if the cell is genetically unstable
-		//mutHall = rand() % mutationRate + 0;
-		//if (genomicInstability && (mutHall > (mutationRate-5))){
-		//	mutationRateUpdate();
-		//}
+		//Always update the oxygen requirments incase there has been a change
+		calcRequiredOxy();
 	}
 
 	/**
@@ -562,28 +559,36 @@ namespace std {
 		if (avoidImmunity) current++;
 		if (genomicInstability) current++;
 
-		numMuts = calcNumMuts;
-		calcRequiredOxy();
+		numMuts = current;
 	}
 
 	/**
 	* Calculate how much oxygen a cell requires based on number of mutations (aggressive)
 	**/
 	void Cell::calcRequiredOxy(){
-		if (deregCellEnergetics) {
+		calcNumMuts();
+		//If the cell is dead it doesn't consume any oxygen
+		if (state == DEAD || state == APOP || state == NEC || state == IM_DEAD){
+			requiredOxy = 0;
+		}
+		else if (state == QUIS) {
+			requiredOxy = OXYGEN_CON_QUIS;
+		}
+		else if (deregCellEnergetics) {
 			requiredOxy = OXYGEN_DEREG;
+			setState(GLY);
 		}
 		else if (numMuts == 8){ //most aggressive phenotype
 			requiredOxy = OXYGEN_CON_CANCER_AGG3;
+			setState(AGG3);
 		}
 		else if (numMuts == 6) {
 			requiredOxy = OXYGEN_CON_CANCER_AGG2;
+			setState(AGG2);
 		}
 		else if (numMuts == 4) {
 			requiredOxy = OXYGEN_CON_CANCER_AGG1;
-		}
-		else if (state == QUIS) {
-			requiredOxy == OXYGEN_CON_QUIS;
+			setState(AGG3);
 		}
 		else {
 			requiredOxy = OXYGEN_CON_HEALTHY;
@@ -628,12 +633,6 @@ namespace std {
 		}
 	}
 
-	/**
-	Method to set oxygen requirements
-	*/
-	void Cell::setRequiredOxygen(double newOxy){
-	
-	}
 
 	/** Method to test if enough oxygen to live
 	//2/3
@@ -642,7 +641,7 @@ namespace std {
 	* Alive cancer cells have 3 different oxygen requirements, all slightly more aggressive
 	* Alive cancer cells with deregulated energetics have same oxygen consumption as quiescent
 	*/
-	bool Cell::checkOxygen(double oxygenAmount, int cellState){
+	bool Cell::checkOxygen(double oxygenAmount){
 		//Mark: I'm not sure about this
 		//I only want to consume oxygen if there is enough there to remove 
 		//from the lbm system
@@ -650,22 +649,16 @@ namespace std {
 		//from the system? It should in reality, but our system 
 		//doesn't infuse oxygen into the system, so I feel like the 
 		//angiogenic ones shouldn't remove it perhaps?
+
+		//First, make sure the cell's require oxygen demand is up to date based on state
+		calcRequiredOxy();
+
+		//If the cell is angiogenic or near an angiogeneic, it doesn't need any extra oxygen, so thats fine
 		if (angiogenesis() == true || neighbourSusAngio() == true){
 			return true;
 		}
-		if ((cellState == ALIVE) && (oxygenAmount >= OXYGEN_CON_HEALTHY)){
-			return true;
-		}
-		else if ((cellState == QUIS) && (oxygenAmount >= OXYGEN_CON_QUIS)){
-			return true;
-		}
-		else if ((cellState == AGG1) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG1)){
-			return true;
-		}
-		else if ((cellState == AGG2) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG2)){
-			return true;
-		}
-		else if ((cellState == AGG3) && (oxygenAmount >= OXYGEN_CON_CANCER_AGG3)){
+		//if not angiogenic, make sure it has enough oxygen
+		else if (oxygenAmount >= requiredOxy){
 			return true;
 		}
 		else {
@@ -689,7 +682,8 @@ namespace std {
 	* Set the state to dead if telomere runs out
 	*/
 	void Cell::setToDead(){
-		state = DEAD;
+		setState(DEAD);
+		alive = false;
 	}
 
 	/**
@@ -698,6 +692,12 @@ namespace std {
 	*/
 	void Cell::setState(int stateType){
 		state = stateType;
+		if ((stateType == ALIVE) || (stateType == QUIS) || (stateType == AGG1) || (stateType == AGG2) || (stateType == AGG3) || (stateType == GLY)){
+			alive = true;
+		}
+		else {
+			alive = false;
+		}
 	}
 
 
