@@ -6,16 +6,27 @@ import matplotlib.pylab as pylab
 import matplotlib.pyplot
 import pdb
 import datetime
+#i, j, state, quis, nec, apop, agg1, agg2, agg3, al, mut, sg, igi, aa, it, a, gu, ai, gp = numpy.loadtxt(infilename, dtype=int, unpack=True)
 
 #Order of phenotypes in binary lowest to highest bit
-one = "avoids immunity"
-two = "genome unstable"
-three = "angiogenesis"
-four = "ignores telomere"
-five = "avoids apoptosis"
-six = "ignores growth inhibition"
-seven = "self grows"
-eight = "dead" 
+#Has been updated on April 19
+one = "glyco phenotype"
+two = "avoids immunity"
+three = "genome unstable"
+four = "angiogenesis"
+five = "ignores telomere"
+six = "avoids apoptosis"
+seven = "ignores growth inhibition"
+eight = "self grows"
+nine = "dead" 
+ten = "mut"
+eleven = "alive"
+twelve = "agg3"
+thirteen = "agg2"
+fourteen = "agg1"
+fifteen = "apop"
+sixteen = "nec"
+seventeen = "quis"
 
 def file_len(fname):
     with open(fname) as f:
@@ -25,9 +36,9 @@ def file_len(fname):
     
 def make_r(x):
     x = int(x)
-    if (x >= 128): #Cell is dead so colour black
+    if (x < 128): #Cell is dead so colour black #April 19 had to swap this.. now the 1 is alive.. so 128 or greater is alive
         return 0
-    if (x == 0): 
+    if (x == 128): 
         return 100
     if (x*4 < 255):
         return x*4
@@ -37,9 +48,9 @@ def make_r(x):
     
 def make_g(x):
     x = int(x) 
-    if (x >= 128): #Cell is dead so colour black
+    if (x < 128): #Cell is dead so colour black
         return 0
-    if (x == 0): #cell is healthy and alive 
+    if (x == 128): #cell is healthy and alive 
         return 149
     else:
         g = x*3
@@ -50,9 +61,9 @@ def make_g(x):
         
 def make_b(x):
     x = int(x)
-    if (x >= 128): #Cell is dead so colour black
+    if (x < 128): #Cell is dead so colour black
         return 0
-    if (x == 0): #cell is healthy and alive 
+    if (x == 128): #cell is healthy and alive 
         return 237
     return x/2
             
@@ -92,6 +103,9 @@ def convert_to_hallmarks(mutBin):
         pheno = pheno + seven + ", "
     if (get_bit(mutBin, 7) == 1):
         pheno = pheno + eight + ", "
+    #Updated for glyco pheno April 19th
+    if (get_bit(mutBin, 8) == 1):
+        pheno = pheno + nine + ","
     if (pheno == "Mutations: dead"):
         return "Dead"
     if (pheno == "Mutations: "):
@@ -121,10 +135,10 @@ now = datetime.datetime.now()
 fileTime = str(now.month) + "_" + str(now.day) + "_" + str(now.year) + "_" + str(now.hour)+ "_" + str(now.minute)
 newLocation = "C:\\Users\\Jenna\\Documents\\Visual Studio 2012\\Projects\\HallSim2\\Output\\" + fileTime
 #newLocation = "C:\\Users\\Jenna\\Documents\\Visual Studio 2012\\Projects\\HallSim2\\Output\\" + str(now.month) + "_" + str(now.day) + "_" + str(now.year) + "_" + str(now.hour)+ "_" + str(now.minute)
-os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working") #Working3    #Changes to the director with the input files
+os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working2") #Working3    #Changes to the director with the input files
 os.makedirs(newLocation) #Make the directory for the output
 newLocation = newLocation + "\\"
-folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working"
+folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working2"
 
 #Local work files
 #newLocation = "/Users/jenna/Research/HallSim2/" + str(now.month) + "_" + str(now.day) + "_" + str(now.year) + "_" + str(now.hour)+ "_" + str(now.minute)
@@ -141,6 +155,7 @@ import os.path
 for filename in os.listdir (folder):
     total = file_len(filename)-1;
 
+
     #Create file name
     #eg infilename = 'Cells_g_11_13_2_end.txt'
     infilename = filename
@@ -150,7 +165,7 @@ for filename in os.listdir (folder):
 
     
     #Load in data
-    i, j, state, mut, sg, igi, aa, it, a, gu, ai = numpy.loadtxt(infilename, dtype=int, unpack=True)
+    i, j, state, quis, nec, apop, agg1, agg2, agg3, al, mut, sg, igi, aa, it, a, gu, ai, gp = numpy.loadtxt(infilename, dtype=int, unpack=True)
    # pdb.set_trace()
     # pylab.show()
     # pylab.ion()
@@ -187,15 +202,36 @@ for filename in os.listdir (folder):
     a_aa_Cellsj = []
     alive = 0
     dead = 0
+    numQuis = 0
+    numApop = 0
+    numNec = 0
+    imdead = 0
+    numGly = 0
+    numAgg1 = 0
+    numAgg2 = 0
+    numAgg3 = 0
     mutInts = []
     phenotypes = {}
     phenoHalls = {}
     regAlive = 0
     
+    #State can be:
+    #	ALIVE, DEAD, QUIS, APOP, NEC, IM_DEAD, AGG1, AGG2, AGG3, GLY
+    #     0     1      2    3     4      5      6      7     8    9
+    
+    #Need to add new arrays to keep track of 
+    # Glyco cells
+    # Quiescent cells
+    # And then different dead cells 
+    # April 19th.. haven't done this yet
+    # Also watch out a few lines down.. the mut value includes the state which is no longer just 0 or 1... might have to do something about that
     
     for x in range(0, total):
         # get the binary value of the mutations
-        mutValue =  "0b" + str(state[x]) + str(sg[x]) + str(igi[x]) + str(aa[x]) + str(it[x]) + str(a[x]) + str(gu[x]) + str(ai[x])
+        #Al is the new state... either 0 or 1... 1 is alive, 0 is dead
+        mutValue =  "0b" + str(al[x]) + str(sg[x]) + str(igi[x]) + str(aa[x]) + str(it[x]) + str(a[x]) + str(gu[x]) + str(ai[x])
+        #i, j, state, quis, nec, apop, agg1, agg2, agg3, al, mut, sg, igi, aa, it, a, gu, ai, gp
+        #mutValue = "0b" + str(quis[x]) + str(nec[x]) + str(al[x]) + str(sg[x]) + str(igi[x]) + str(aa[x]) + str(it[x]) + str(a[x]) + str(gu[x]) + str(ai[x])
         #Convert into integer
         mutInt = int(mutValue, 2)
         #Keep track of how many of each phenotype are present
@@ -213,6 +249,23 @@ for filename in os.listdir (folder):
         mutInts.append(str(mutInt))
 
         #Tally various combinations and cell types
+        #April 19
+        if state[x] == 2:
+            numQuis += 1
+        if state[x] == 3:
+            numApop += 1
+        if state[x] == 4:
+            numNec += 1
+        if state[x] == 5:
+            imdead += 1
+        if state[x] == 9:
+            numGly += 1
+        if state[x] == 6:
+            numAgg1 += 1
+        if state[x] == 7:
+            numAgg2 += 1
+        if state[x] == 8:
+            numAgg3 += 1
         if a[x] == 1 and igi[x] == 1 and state[x] == 0:
             a_igi_Cellsi.append(i[x])
             a_igi_Cellsj.append(j[x])
@@ -245,7 +298,8 @@ for filename in os.listdir (folder):
             gu_count += 1
         if ai[x] == 1 and state[x] == 0:
             ai_count += 1
-        if mut[x] == 1 and state[x] == 0:
+            #April 19
+        if mut[x] == 1 and (state[x] == 0 or state[x] == 6 or state[x] == 7 or state[x] == 8 or state[x] == 9):
             cancer += 1
             cancerCellsi.append(i[x])
             cancerCellsj.append(j[x])
@@ -334,7 +388,16 @@ for filename in os.listdir (folder):
     reg = "Noncancer " + (str)(regCells) + "\n"
     aliveString = "Alive " + (str)(alive) + "\n"
     regAliveString = "HealthyAlive " + (str)(regAlive) + "\n"
-    deadString = "Dead " + (str)(dead) + "\n"
+    deadString = "Random Dead " + (str)(dead) + "\n"
+    apopString = "Apoptosis " + (str)(apop) + "\n"
+    quisString = "Quis " + (str)(quis) + "\n"
+    necString = "Necrotic " + (str)(nec) + "\n"
+    imString = "Immunity death " + (str)(imdead) + "\n"
+    glyString = "Glyco phenotype " + (str)(gly) + "\n"
+    agg1String = "Agg1 " + (str)(agg1) + "\n"
+    agg2String = "Agg2 " + (str)(agg2) + "\n"
+    agg3String = "Agg3 " + (str)(agg3) + "\n"
+
     unique = "Unique phenotypes: "+ str(set(mutInts)) + "\n"
     breakdown = decode_phenos(phenotypes)
     first = "sg "+ (str)(sg_count) + "\n"
@@ -347,11 +410,11 @@ for filename in os.listdir (folder):
     eigth = "ai " + (str)(ai_count) + "\n"
     
     #Write out all of the data we are interested in
-    summary = total + cancer + aliveString + regAliveString + deadString + reg + unique + breakdown + "Individual: " + first + second + third + fourth + fifth + seventh + eigth
+    summary = total + cancer + apopString + quisString + necString + imString + glyString + agg1String + agg2String + agg3String + aliveString + regAliveString + deadString + reg + unique + breakdown + "Individual: " + first + second + third + fourth + fifth + seventh + eigth
    
 
 
-    #output = numpy.save(open(outfilename, 'w'), summary);
+    output = numpy.save(open(outfilename, 'w'), summary);
 
 
     

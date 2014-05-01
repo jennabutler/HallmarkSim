@@ -42,16 +42,21 @@ const int TOP_GROWTH = 50; //1500
 const int BOTTOM_GROWTH = GRID_SIDE;
 
 //Oxygen consumption rates
-const double OXYGEN_CON_HEALTHY = 0.019;
-const double OXYGEN_CON_QUIS = 0.0095;
-const double OXYGEN_DEREG = 0.0095;
-const double OXYGEN_CON_CANCER_AGG1 = 0.017;
-const double OXYGEN_CON_CANCER_AGG2 = 0.015;
-const double OXYGEN_CON_CANCER_AGG3 = 0.013;
+const double OXYGEN_CON_HEALTHY = 0.05;
+const double OXYGEN_CON_QUIS = OXYGEN_CON_HEALTHY/2;
+const double OXYGEN_DEREG = 0;
+const double OXYGEN_CON_CANCER_AGG1 = OXYGEN_CON_HEALTHY/1.1;
+const double OXYGEN_CON_CANCER_AGG2 = OXYGEN_CON_HEALTHY/1.2;
+const double OXYGEN_CON_CANCER_AGG3 = OXYGEN_CON_HEALTHY/1.3;
 
-//0.011
-
-const int MUTATION_RATE = 500;
+//April 28
+//healhy = 0.05
+//quis = 0.025
+//dereg = 0.025
+//agg1 = 0.045
+//agg2 = 0.04
+//agg3 = 0.035
+const int MUTATION_RATE = 400;
 
 const double END_PERCENT = 0.9999;
 //0,0072

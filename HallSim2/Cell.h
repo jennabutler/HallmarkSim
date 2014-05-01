@@ -50,8 +50,14 @@ public:
 	void setToDead();
 	void setState(int stateType);
 	void updateImmuneDeathLiklihood();
-	void checkTrapped();
+	bool checkTrapped();
 	bool isAlive() { return alive; }
+	bool isQuis();
+	bool isNec();
+	bool isApop();
+	bool isAgg1();
+	bool isAgg2();
+	bool isAgg3();
 
 
 	//Methods not yet implemented correctly
@@ -84,6 +90,7 @@ public:
 	//bool deregulatesCellEnergetics() { return deregulateCellEnergetics; }
 	int getImmuneDeathLiklihood() { return immuneDeathLiklihood; }
 	bool avoidsImmunity() { return avoidImmunity; }
+	bool glycoPheno() { return deregCellEnergetics; }
 	bool genomeUnstable() { return genomicInstability; }
 
 	//oxygen stuff

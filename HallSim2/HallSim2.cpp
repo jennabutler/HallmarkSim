@@ -96,6 +96,13 @@ void WriteParams(int howEnd){
 	istream << "Growth H: " << GROWTH_H << "\n";
 	istream << "Growth K: " << GROWTH_K << "\n";
 	istream << "Initial mutation rate: " << MUTATION_RATE << "\n";
+	istream << "Oxygen consumption of healthy cells: " << OXYGEN_CON_HEALTHY << "\n";
+	istream << "Oxygen consumption of quis cells: " << OXYGEN_CON_QUIS << "\n";
+	istream << "Oxygen consumption of dereg cells: " << OXYGEN_DEREG << "\n";
+	istream << "Oxygen consumption of agg1 cells: " << OXYGEN_CON_CANCER_AGG1 << "\n";
+	istream << "Oxygen consumption of agg2 cells: " << OXYGEN_CON_CANCER_AGG2 << "\n";
+	istream << "Oxygen consumption of agg3 cells: " << OXYGEN_CON_CANCER_AGG3 << "\n";
+
 
 	//Write the cells to a file
 	istream << "\n";
@@ -119,9 +126,11 @@ void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list
 	//Iterate over the cells and get list to draw
 	for (; iterator != iteratorEnd; ++iterator) {
 		//(*iterator)->print();
-		istream << (*iterator)->geti() << " " << (*iterator)->getj() << " " << (*iterator)->getState() << " " << (*iterator)->isMutated() << " ";
+//Run and test is quis to see if taht works, then change python to colour differently if that bit is on
+		istream << (*iterator)->geti() << " " << (*iterator)->getj() << " " << (*iterator)->getState() << " " << (*iterator)->isQuis() << " " << (*iterator)->isNec() << " " << (*iterator)->isApop() << " ";
+		istream << (*iterator)->isAgg1() << " " << (*iterator)->isAgg2() << " " << (*iterator)->isAgg3() << " " << (*iterator)->isAlive() << " " << (*iterator)->isMutated() << " ";
 		istream << (*iterator)->selfGrows() << " " << (*iterator)->ignoresGrowthInhibition() << " " << (*iterator)->avoidsApoptosis() << " ";
-		istream << (*iterator)->ignoresTelomere() << " " << (*iterator)->angiogenesis() << " "  << (*iterator)->genomeUnstable() << " " << (*iterator)->avoidsImmunity()  <<"\n";
+		istream << (*iterator)->ignoresTelomere() << " " << (*iterator)->angiogenesis() << " "  << (*iterator)->genomeUnstable() << " " << (*iterator)->avoidsImmunity() << " " << (*iterator)->glycoPheno()  <<"\n";
 	}
 
 	//Write the cells to a file
@@ -228,8 +237,11 @@ int RunSimulation(Combo c, int it){
 			}
 
 			//Check if it died (random cell death)
-			if (currentCell->died()) //if it dies, move on to next cell.. 
+			if (currentCell->died()) { //if it dies, move on to next cell.. 
+				events.pop();
+				counter++;
 				continue;
+			}
 			//Check for apoptosis
 			if (currentCell->isMutated()) {
 				if (currentCell->apoptosis()==true) { //if it dies via apoptosis, move on
@@ -264,6 +276,9 @@ int RunSimulation(Combo c, int it){
 			else {
 				//If the cell is out of telomere then it is dead
 				currentCell->setToDead();
+				events.pop(); //This removes the older event
+				counter++;
+				continue;
 			}
 			//Check Hallmark 5 .. within blood range or has angiogenesis turned on
 			bool blood = false;
@@ -271,12 +286,21 @@ int RunSimulation(Combo c, int it){
 			if (currentCell->withinBloodRange() == true){
 				blood = true;
 			}
-			else {
-				//If cell is out of blood (and therefore oxygen) it dies
-				currentCell->setToDead();
-			}
+			//else {
+			//	//If cell is out of blood (and therefore oxygen) it dies
+			//	currentCell->setToDead();
+			//	events.pop(); //This removes the older event
+			//	counter++;
+			//	continue;
+			//}
 			//Apply immune system
-			currentCell->killedByImmune();
+			if (currentCell->killedByImmune()){
+				events.pop(); //This removes the older event
+				counter++;
+				continue;
+			}
+
+
 
 			//2/3
 			//Check if the cell has oxygen
@@ -301,23 +325,32 @@ int RunSimulation(Combo c, int it){
 				binaryGrid.consumeOxygen(currentCell->geti(), currentCell->getj(), OXYGEN_CON_QUIS);
 				currentCell->markConsumedOxy(true);
 				//Don't go forward with mitosis if not enough oxygen
-				break;
+				events.pop(); //This removes the older event
+				counter++;
+				continue;
 			}
 			//Not even enough oxygen for quiescense..
 			else {
 				//JENNA TO-DO: check that this changes the cell state and the alive bool
 				currentCell->setState(NEC); //cell dies via apoptosis
-				break;
+				events.pop(); //This removes the older event
+				counter++;
+				continue;
 			}
 
 			//Check if the cell is "trapped".. if it has no space,
 			//is outside of growth factor and outside of angiogenesis
 			//and _not_ cancerous, it is trapped and should die
-			currentCell->checkTrapped();
+			if (currentCell->checkTrapped()){
+				events.pop();
+				counter++;
+				continue;
+			}
 			//Lastly, make sure cell is alive
 			bool cellAlive = currentCell->isAlive();
 			//If all of the above conditions are satisfied, we perform mitosis 
-			if (canGrow && space && telomere && blood && (cellAlive) && enoughOxygen){
+			if (canGrow && space && telomere && blood && cellAlive && enoughOxygen){
+
 				//Perform mitosis
 				//Create a daughter cell and add it to the list; increment counter
 				daughterCell = new Cell(*currentCell); //Call copy constructor BUT 
@@ -451,8 +484,8 @@ int RunSimulation(Combo c, int it){
 list<Combo> * allCombos = new list<Combo>();
 
 void generateGroups() {
-	//Combo c1 = {"a", 1, 1, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c1);
-	Combo c2 = {"b", 0, 0, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c2);
+	Combo c1 = {"a", 1, 1, 1, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c1);
+	//Combo c2 = {"b", 0, 0, 1, 1, 1, 1, 1, 1};	allCombos->push_back(c2);
 	//Combo c3 = {"c", 0, 1, 0, 1, 1};	allCombos->push_back(c3);
 	//Combo c4 = {"d", 0, 1, 1, 0, 1};	allCombos->push_back(c4);
 	//Combo c5 = {"e", 0, 1, 1, 1, 0};	allCombos->push_back(c5);
@@ -495,7 +528,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	
 	//Now generate the pictures and such
-	std::string test = "python analyzeData2.py";
+	std::string test = "python analyzeDataApril20.py";
 	system(test.c_str());
 
 	WriteParams(howEnd);

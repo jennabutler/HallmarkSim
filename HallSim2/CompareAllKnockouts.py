@@ -105,9 +105,9 @@ from pylab import *
 
 pylab.legend((ca, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21), 
 ('All Hallmarks', 'SG & IGI', 'SG & AA', 'SG & IT', 'SG & A', 'SG & GU', 'SG & AI', 'IGI & AA', 'IGI & IT', 'IGI & A', 'IGI & GU', 'IGI & AI',
-'AA & IT', 'AA & A', 'AA & GU', 'AA & AI', 'IT & A', 'IT & GU', 'IT & AI', 'A & GU', 'A & AI', 'GU & AI'), scatterpoints=1,loc='upper left', fontsize=11, ncol=2)
-pylab.xlabel("Simulation counter (step size = 400)", fontsize=11)
-pylab.ylabel("Cancer cell count", fontsize=11)
+'AA & IT', 'AA & A', 'AA & GU', 'AA & AI', 'IT & A', 'IT & GU', 'IT & AI', 'A & GU', 'A & AI', 'GU & AI'), scatterpoints=1,loc='upper left', fontsize=12, ncol=2)
+pylab.xlabel("Simulation counter (step size = 400)", fontsize=16)
+pylab.ylabel("Cancer cell count", fontsize=16)
 pylab.ylim(-100,2500)
 pylab.xlim(0, 40)
 pictureFileName = "..\\Stats\\" + "ComparePhenoGrowth.png"

@@ -21,8 +21,8 @@ def file_len(fname):
 os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working")
 
 #Edit these each run
-numRuns = 10 #This is the number of iterations (i in visual studio)
-numReps = 24 #This is the number of steps the program took (so if we go to 14800, it is that divided by 4, which is 37) (9600=24)
+numRuns = 1 #This is the number of iterations (i in visual studio)
+numReps = 37 #This is the number of steps the program took (so if we go to 14800, it is that divided by 4, which is 37) (9600=24)
 import sys
 import os.path
 
@@ -128,7 +128,6 @@ for i in cancerCells:
         finalCancerNumbers.append(i[1])
 
 print finalCancerNumbers
-pdb.set_trace()
 
 outString = ", ".join(str(e) for e in finalCancerNumbers) 
 print finalCancerNumbers
@@ -282,33 +281,33 @@ pylab.show()
 pylab.draw()
 c = matplotlib.pyplot.scatter(runs, cancerCells, color="red")
 n = matplotlib.pyplot.scatter(runs, regularCells, color="blue")
-pylab.legend((c, n), ('Cancer', 'Regular'), scatterpoints=1,loc='upper left', fontsize=11)
-pylab.xlabel("Simulation step (step size = 400)", fontsize=11)
-pylab.ylabel("Cell count", fontsize=11)
-pylab.ylim(-100,2500)
+pylab.legend((c, n), ('Cancer', 'Regular'), scatterpoints=1,loc='upper left', fontsize=22)
+pylab.xlabel("Simulation step (step size = 400)", fontsize=22)
+pylab.ylabel("Cell count", fontsize=22)
+pylab.ylim(-100,3000)
 pylab.xlim(0, 40)
 pictureFileName = "..\\Stats\\" + letter + "_cancerAndNon.png"
-pylab.savefig(pictureFileName, dpi=150)
+pylab.savefig(pictureFileName, dpi=800, figsize=(8.0, 5.0))
 
 #plot all types
 pylab.clf()
 can1 = pylab.scatter(runs, cancerCells, color="red")
-sg1 = pylab.scatter(runs, sgCells, color="gray")
-igi1 = matplotlib.pyplot.scatter(runs, igiCells, color="green")
-aa1 = pylab.scatter(runs, aaCells, color="magenta")
-it1 = pylab.scatter(runs, itCells, color="purple")
-a1 = pylab.scatter(runs, aCells, color="darkblue")
+sg1 = pylab.scatter(runs, sgCells, color="gray", marker="+")
+igi1 = matplotlib.pyplot.scatter(runs, igiCells, color="green", marker="^")
+aa1 = pylab.scatter(runs, aaCells, color="magenta", marker="v")
+it1 = pylab.scatter(runs, itCells, color="purple", marker="<")
+a1 = pylab.scatter(runs, aCells, color="darkblue", marker=">")
 #dr1 = pylab.scatter(drCells[:,0], drCells[:,1], color="magenta")
-gu1 = pylab.scatter(runs, guCells, color="black")
-ai1 = pylab.scatter(runs, aiCells, color="lightblue")
+gu1 = pylab.scatter(runs, guCells, color="black", marker="8")
+ai1 = pylab.scatter(runs, aiCells, color="lightblue", marker="s")
 pylab.legend((can1, sg1, igi1, aa1, it1, a1, gu1, ai1), ( 'All cancer cells', 'Self growth', 'Ignores growth inhibition','Avoids apoptosis', 'Ignores telomeres', 
-    'Angiogenesis', 'Genetical unstable', 'Avoids immunity'), loc='upper left', fontsize=11)
-pylab.xlabel("Simulation step (step size = 400)", fontsize=11)
-pylab.ylabel("Number of cells with hallmark turned on", fontsize=11)
-pylab.ylim(-100,2500)
+    'Angiogenesis', 'Genetical unstable', 'Avoids immunity'), loc='upper left', fontsize=18)
+pylab.xlabel("Simulation step (step size = 400)", fontsize=22)
+pylab.ylabel("Number of cells with \n hallmark activated", fontsize=22)
+pylab.ylim(-100,3000)
 pylab.xlim(0, 40)
 pictureFileName2 = "..\\Stats\\" + letter + "_allMut.png"
-pylab.savefig(pictureFileName2, dpi=150)
+pylab.savefig(pictureFileName2, dpi=800, figsize=(8.0, 5.0))
 
 
 outfileName = "..\\Stats\\" + letterFinal + "_averagePerStep.txt"

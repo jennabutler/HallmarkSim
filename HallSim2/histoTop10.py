@@ -29,13 +29,13 @@ c.sort(key=itemgetter(1))
 font = {'family' : 'sanserif',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 12,
+        'size'   : 18,
         }
 
 font2 = {'family' : 'sansserif',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 16,
+        'size'   : 14,
         }
 labels, values = zip(*c)
 
@@ -48,7 +48,8 @@ plt.bar(indexes, values, width=2, color="blueviolet")
 plt.xlabel("Phenotype identifier", fontdict=font)
 plt.ylabel("Number of occurances in top 10 \n phenotypes for cancerous tumours", fontdict=font)
 #plt.title("Number of occurances for different phenotypes \n in top 10 subclones of a tumour", fontdict=font2)
-plt.xticks(indexes + width * 0.5, labels, rotation='vertical')
+plt.xticks(indexes + width * 0.5, labels, rotation='vertical', fontdict=font2)
+plt.figure(figsize=(8.0, 5.0))
 pictureFileName2 = "..\\Stats\\"  + "Phenos.png"
 pylab.savefig(pictureFileName2, dpi=150)
 

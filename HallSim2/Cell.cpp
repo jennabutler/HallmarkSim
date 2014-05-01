@@ -65,6 +65,7 @@ namespace std {
 		//deregulateCellEnergetics = false;
 		immuneDeathLiklihood = 1000;
 		avoidImmunity = false;
+		deregCellEnergetics = false;
 		genomicInstability = false;
 		angiogenesisImmunity = 10;
 		avoidImmuneParam = 10;
@@ -194,6 +195,66 @@ namespace std {
 	bool Cell::isMutated() const
 	{
 		return mutated;
+	}
+
+	/**
+	@return whether the cell is quiscent or nnot
+	*/
+	bool Cell::isQuis() {
+		if (state == QUIS){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	@return true if the cell is necrotic
+	*/
+	bool Cell::isNec(){
+		if (state == NEC){
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	@return true if the cell is necrotic
+	*/
+	bool Cell::isApop(){
+		if (state == APOP){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	@return true if the cell is necrotic
+	*/
+	bool Cell::isAgg1(){
+		if (state == AGG1){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	@return true if the cell is necrotic
+	*/
+	bool Cell::isAgg2(){
+		if (state == AGG2){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	@return true if the cell is necrotic
+	*/
+	bool Cell::isAgg3(){
+		if (state == AGG3){
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -515,6 +576,7 @@ namespace std {
 		if ((mutHall == (mutationRate)) && (EMERGE1 == true)){
 			//Turn on emerging hallmark 2
 			deregCellEnergetics = true;
+			setState(GLY);
 			mutated = true;
 			//Now that mutated, update the liklihood cell will be killed by immune system
 			updateImmuneDeathLiklihood();
@@ -588,7 +650,7 @@ namespace std {
 		}
 		else if (numMuts == 4) {
 			requiredOxy = OXYGEN_CON_CANCER_AGG1;
-			setState(AGG3);
+			setState(AGG1);
 		}
 		else {
 			requiredOxy = OXYGEN_CON_HEALTHY;
@@ -624,13 +686,15 @@ namespace std {
 	* no blood and no growth factor it dies
 	* TO-DO: Discuss with Mark if this makes sense
 	*/
-	void Cell::checkTrapped(){
+	bool Cell::checkTrapped(){
 		//Should we do the blood one? Mark
 		//if (!(mutated) && !(withinBloodRange()) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 		if ((!(mutated)) && (!(withinGrowthFactorRange())) && (hasSpace() == -1)){
 			//setToDead();
 			setState(DEAD); //just random cell death flag... should it be a special type?
+			return true;
 		}
+		return false;
 	}
 
 
