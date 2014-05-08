@@ -115,7 +115,7 @@ void WriteParams(int howEnd){
 /**
 * Code to write the current state out to a file
 */
-void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it){
+void WriteToFile(std::list<Cell *>::const_iterator iterator, int time, std::list<Cell *>::const_iterator iteratorEnd, string paramSet, int it, int currentTime){
 	stringstream fileName;
 
 	fileName << "..\\Output\\Working" << "\\Cells_" << paramSet <<"_01_2_" << RUN << "_" << time << "_it_" << it <<".txt";
@@ -220,7 +220,7 @@ int RunSimulation(Combo c, int it){
 	//Main body of simulator
 	//While there are still events to process, the simulation hasn't been going for too long and the tumour isn't completely cancerous, keep simulating
 	//while ((!(events.empty())) && (counter<20000) && (cancerPercent < END_PERCENT)){
-	while ((!(events.empty())) && (counter<20000)){
+	while ((!(events.empty())) && (counter<40000)){
 		//Get next event
 		currentEvent = events.top();
 		//Get the current cell
@@ -457,17 +457,18 @@ int RunSimulation(Combo c, int it){
 		}
 
 	//	Write out every x timesteps
-		if (counter % 400 == 0){
+		if (counter % 800 == 0){
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
-			WriteToFile(iterator, counter, iterator2, c.code, it);
+			WriteToFile(iterator, counter, iterator2, c.code, it, time);
+			cout << time <<"\n";
 		}
 
 	}
 
 	std::list<Cell *>::const_iterator iterator = allCells->begin();
 	std::list<Cell *>::const_iterator iterator2 = allCells->end();
-	WriteToFile(iterator, counter, iterator2, c.code, it);
+	WriteToFile(iterator, counter, iterator2, c.code, it, time);
 
 	for (std::list<Cell *>::const_iterator iterator = allCells->begin(), end = allCells->end(); iterator != end; ++iterator) {
 		//(*iterator)->print();

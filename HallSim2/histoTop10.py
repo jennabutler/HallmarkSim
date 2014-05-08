@@ -7,12 +7,12 @@ import pdb
 from collections import Counter
 
 
-phenos = [128, 20, 0, 144, 4, 16, 160, 136, 192, 52, 128, 20, 0, 4, 16, 144, 130, 136, 132, 22, 
-128, 160, 4, 0, 32, 36, 132, 136, 164, 130, 128, 22, 4, 0, 144, 160, 54, 130, 178, 132, 
-128, 4, 0, 136, 132, 68, 196, 130, 192, 8, 128, 4, 0, 20, 22, 132, 144, 192, 130, 2, 
-128, 4, 0, 132, 20, 136, 144, 192, 64, 130, 128, 4, 0, 144, 132, 28, 192, 20, 16, 136, 
-128, 6, 4, 134, 0, 130, 160, 132, 192, 2,  128, 4, 0, 132, 68, 160, 192, 36, 64, 
-128, 4, 0, 136, 192, 8, 160, 12, 36, 128, 4, 0, 22, 20, 144, 86, 132, 82, 160,
+phenos = [128, 20, 0, 144, 4, 16, 160, 136, 192, 128, 20, 0, 4, 16, 144, 130, 136, 132, 22, 
+128, 160, 4, 0, 36, 132, 136, 130, 128, 22, 4, 0, 144, 160, 130, 132, 
+128, 4, 0, 136, 132, 68, 130, 192, 8, 128, 4, 0, 20, 22, 132, 144, 192, 130, 2, 
+128, 4, 0, 132, 20, 136, 144, 192, 64, 130, 128, 4, 0, 144, 132, 192, 20, 16, 136, 
+128, 4, 0, 130, 160, 132, 192, 2,  128, 4, 0, 132, 68, 160, 192, 36, 64, 
+128, 4, 0, 136, 192, 8, 160, 36, 128, 4, 0, 22, 20, 144, 132, 160,
 128, 4, 0, 132, 20, 192, 144, 160, 68, 64, 128, 4, 0, 132, 160, 144, 136, 192, 68, 20]
 
 
@@ -29,13 +29,13 @@ c.sort(key=itemgetter(1))
 font = {'family' : 'sanserif',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 18,
+        'size'   : 22,
         }
 
 font2 = {'family' : 'sansserif',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 14,
+        'size'   : 18,
         }
 labels, values = zip(*c)
 
@@ -50,8 +50,8 @@ plt.ylabel("Number of occurances in top 10 \n phenotypes for cancerous tumours",
 #plt.title("Number of occurances for different phenotypes \n in top 10 subclones of a tumour", fontdict=font2)
 plt.xticks(indexes + width * 0.5, labels, rotation='vertical', fontdict=font2)
 plt.figure(figsize=(8.0, 5.0))
-pictureFileName2 = "..\\Stats\\"  + "Phenos.png"
-pylab.savefig(pictureFileName2, dpi=150)
+pictureFileName2 = "..\\Stats2\\"  + "Phenos.png"
+pylab.savefig(pictureFileName2, dpi=800)
 
 
 #fig.set_size_inches(18.5,10.5)

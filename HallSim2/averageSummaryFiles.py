@@ -18,7 +18,7 @@ def file_len(fname):
             pass
     return i + 1
 
-os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working")
+os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working3")
 
 #Edit these each run
 numRuns = 1 #This is the number of iterations (i in visual studio)
@@ -41,7 +41,7 @@ guCells = []
 aiCells = []
 letterFinal = 'x'
 
-folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working"
+folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working3"
 for filename in os.listdir (folder):
     #add the time (from file name?) and the number of cancer cells to cancerCell list
     #add the time and the number of regular cells
@@ -68,7 +68,6 @@ for filename in os.listdir (folder):
     
     #currentStep = re.sub("summary_Cells_[a-z]_11_18_1_", "", filename)
     currentStep = re.sub("summary_Cells_[a-z]_01_2_\d+_", "", filename)
-    
     #currentStep = filename.replace("summary_Cells_[a-z]_11_13_2_", "")
     currentStep = re.sub("_it_\d+.txt", "", currentStep)
     currentStep = (int)(currentStep)/400
@@ -131,7 +130,7 @@ print finalCancerNumbers
 
 outString = ", ".join(str(e) for e in finalCancerNumbers) 
 print finalCancerNumbers
-outfileName = "..\\Stats\\" + letterFinal + ".txt"
+outfileName = "..\\Stats2\\" + letterFinal + ".txt"
 #Print both the final cancer values for all of the runs, and the average cancer values to use in the big graph
 output = numpy.save(open(outfileName, 'w'), outString)
 
@@ -286,31 +285,31 @@ pylab.xlabel("Simulation step (step size = 400)", fontsize=22)
 pylab.ylabel("Cell count", fontsize=22)
 pylab.ylim(-100,3000)
 pylab.xlim(0, 40)
-pictureFileName = "..\\Stats\\" + letter + "_cancerAndNon.png"
-pylab.savefig(pictureFileName, dpi=800, figsize=(8.0, 5.0))
+pictureFileName = "..\\Stats2\\" + letter + "_cancerAndNon.png"
+pylab.savefig(pictureFileName, dpi=800, figsize=(4.0, 3.0))
 
 #plot all types
 pylab.clf()
 can1 = pylab.scatter(runs, cancerCells, color="red")
-sg1 = pylab.scatter(runs, sgCells, color="gray", marker="+")
+sg1 = pylab.scatter(runs, sgCells, color="darkgoldenrod", marker="+")
 igi1 = matplotlib.pyplot.scatter(runs, igiCells, color="green", marker="^")
 aa1 = pylab.scatter(runs, aaCells, color="magenta", marker="v")
 it1 = pylab.scatter(runs, itCells, color="purple", marker="<")
 a1 = pylab.scatter(runs, aCells, color="darkblue", marker=">")
 #dr1 = pylab.scatter(drCells[:,0], drCells[:,1], color="magenta")
 gu1 = pylab.scatter(runs, guCells, color="black", marker="8")
-ai1 = pylab.scatter(runs, aiCells, color="lightblue", marker="s")
+ai1 = pylab.scatter(runs, aiCells, color="saddlebrown", marker="s")
 pylab.legend((can1, sg1, igi1, aa1, it1, a1, gu1, ai1), ( 'All cancer cells', 'Self growth', 'Ignores growth inhibition','Avoids apoptosis', 'Ignores telomeres', 
     'Angiogenesis', 'Genetical unstable', 'Avoids immunity'), loc='upper left', fontsize=18)
 pylab.xlabel("Simulation step (step size = 400)", fontsize=22)
 pylab.ylabel("Number of cells with \n hallmark activated", fontsize=22)
 pylab.ylim(-100,3000)
 pylab.xlim(0, 40)
-pictureFileName2 = "..\\Stats\\" + letter + "_allMut.png"
-pylab.savefig(pictureFileName2, dpi=800, figsize=(8.0, 5.0))
+pictureFileName2 = "..\\Stats2\\" + letter + "_allMut.png"
+pylab.savefig(pictureFileName2, dpi=800, figsize=(3.0, 1.4))
 
 
-outfileName = "..\\Stats\\" + letterFinal + "_averagePerStep.txt"
+outfileName = "..\\Stats2\\" + letterFinal + "_averagePerStep.txt"
 outString = numpy.array_str(cancerCells)
 print outString
 #Print both the final cancer values for all of the runs, and the average cancer values to use in the big graph
