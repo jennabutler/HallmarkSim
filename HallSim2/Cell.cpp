@@ -32,7 +32,7 @@ namespace std {
 
 	Cell::Cell() {
 		//Telomere, mutation and death rates from Santos 2012
-		telomere = 100;
+		telomere = 60;
 		evadeApoptosis = 10;
 		mutationRate = MUTATION_RATE;
 		geneticInstabilityFactor = 5;

@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
-const int RAND_SEED = 5678;
+const int RAND_SEED = 1234;
 const int NUM_NEIGHBOURS = 8;
 const int GRID_SIDE = 300; //5001
 const int DIM = 2;
@@ -22,19 +22,19 @@ const int RIGHT_BLOOD_3 = 250;
 const int TOP_BLOOD_3 = 0;
 const int BOTTOM_BLOOD_3 = 250;
 
-const int BLOOD_RADIUS = 80; //300
-const int BLOOD_RADIUS_2 = 85;
-const int BLOOD_RADIUS_3 = 90;
-const int BLOOD_RADIUS_4 = 95;
+const int BLOOD_RADIUS = 60; //300
+const int BLOOD_RADIUS_2 = 65;
+const int BLOOD_RADIUS_3 = 70;
+const int BLOOD_RADIUS_4 = 75;
 const int BLOOD_H = 150; //2480
 const int BLOOD_K = 150; //2480
 
-const int GROWTH_RADIUS = 80; //200
+const int GROWTH_RADIUS = 60; //200
 const int GROWTH_H = 150; //2525 
 const int GROWTH_K = 150; //2525
-const int GROWTH_RADIUS_2 = 85;
-const int GROWTH_RADIUS_3 = 90;
-const int GROWTH_RADIUS_4 = 95;
+const int GROWTH_RADIUS_2 = 65;
+const int GROWTH_RADIUS_3 = 70;
+const int GROWTH_RADIUS_4 = 75;
  
 const int LEFT_GROWTH = 125; //2425
 const int RIGHT_GROWTH = 200; //2600
@@ -42,7 +42,7 @@ const int TOP_GROWTH = 50; //1500
 const int BOTTOM_GROWTH = GRID_SIDE;
 
 //Oxygen consumption rates
-const double OXYGEN_CON_HEALTHY = 0.05;
+const double OXYGEN_CON_HEALTHY = 0.015;
 const double OXYGEN_CON_QUIS = OXYGEN_CON_HEALTHY/2;
 const double OXYGEN_DEREG = 0;
 const double OXYGEN_CON_CANCER_AGG1 = OXYGEN_CON_HEALTHY/1.1;
@@ -56,7 +56,7 @@ const double OXYGEN_CON_CANCER_AGG3 = OXYGEN_CON_HEALTHY/1.3;
 //agg1 = 0.045
 //agg2 = 0.04
 //agg3 = 0.035
-const int MUTATION_RATE = 500;
+const int MUTATION_RATE = 300;
 //Most human cells are 10 um
 const double END_PERCENT = 0.9999;
 //0,0072

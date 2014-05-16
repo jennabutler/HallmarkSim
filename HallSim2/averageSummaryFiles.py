@@ -18,11 +18,11 @@ def file_len(fname):
             pass
     return i + 1
 
-os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working3")
+os.chdir("C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working")
 
 #Edit these each run
 numRuns = 1 #This is the number of iterations (i in visual studio)
-numReps = 37 #This is the number of steps the program took (so if we go to 14800, it is that divided by 4, which is 37) (9600=24)
+numReps = 75 #This is the number of steps the program took (so if we go to 14800, it is that divided by 4, which is 37) (9600=24)
 import sys
 import os.path
 
@@ -41,7 +41,7 @@ guCells = []
 aiCells = []
 letterFinal = 'x'
 
-folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working3"
+folder = "C:\Users\Jenna\Documents\Visual Studio 2012\Projects\HallSim2\Output\Working"
 for filename in os.listdir (folder):
     #add the time (from file name?) and the number of cancer cells to cancerCell list
     #add the time and the number of regular cells

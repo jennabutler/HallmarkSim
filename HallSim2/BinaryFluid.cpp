@@ -56,7 +56,7 @@ using namespace std;
 //       phi = density_blood - density_oxygen.
 //       This gives a value for the density of oxygen at the boundary of:
 //       0.85*density_oxygen.
-#define density_oxygen_real 9.0e-9 //(mol/(mm^3))
+#define density_oxygen_real 9.0e-10 //(mol/(mm^3)) //May 16 2014 Jenna changed from 9.0e-9
 #define density_blood_real 3.0e-7 //(mol/(mm^3))
 #define tau2 4.0
 #define dx 0.075

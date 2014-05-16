@@ -457,7 +457,7 @@ int RunSimulation(Combo c, int it){
 		}
 
 	//	Write out every x timesteps
-		if (counter % 800 == 0){
+		if (counter % 500 == 0){
 			std::list<Cell *>::const_iterator iterator = allCells->begin();
 			std::list<Cell *>::const_iterator iterator2 = allCells->end();
 			WriteToFile(iterator, counter, iterator2, c.code, it, time);
